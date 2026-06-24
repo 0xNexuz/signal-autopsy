@@ -99,26 +99,6 @@ This is not financial advice or a production risk model. It is an interaction mo
 
 Open `index.html` directly in a browser.
 
-From PowerShell:
-
-```powershell
-cd "C:\Users\USER\Documents\Codex\2026-06-24\run-up-info-about-the-bitget"
-start .\index.html
-```
-
-## Deployment
-
-The project is deployed on Vercel as a static site:
-
-```text
-https://signal-autopsy.vercel.app
-```
-
-To redeploy:
-
-```powershell
-vercel --prod --yes
-```
 
 ## GitHub
 
