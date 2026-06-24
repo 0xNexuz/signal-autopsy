@@ -1,0 +1,11 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Signal Autopsy logo</title>
+  <desc id="desc">A square graphite mark with an amber signal pulse and autopsy scope ring.</desc>
+  <rect width="512" height="512" rx="72" fill="#090D12"/>
+  <rect x="34" y="34" width="444" height="444" rx="54" fill="#101820" stroke="#2C3A46" stroke-width="10"/>
+  <circle cx="256" cy="256" r="154" stroke="#2C3A46" stroke-width="14"/>
+  <circle cx="256" cy="256" r="96" stroke="#2C3A46" stroke-width="8"/>
+  <path d="M92 258H154L184 172L242 340L287 216L322 258H420" stroke="#E9A32A" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M256 102V148M256 364V410M102 256H148M364 256H410" stroke="#E9A32A" stroke-width="12" stroke-linecap="round" opacity=".72"/>
+  <circle cx="256" cy="256" r="18" fill="#E9A32A"/>
+</svg>

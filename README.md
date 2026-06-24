@@ -2,6 +2,8 @@
 
 Pre-trade failure intelligence for AI trading agents.
 
+![Signal Autopsy logo](./logo.svg)
+
 Signal Autopsy is a static product prototype that turns an AI trading agent's proposed trade into a replayable pre-mortem. Instead of asking only whether a signal might win, it asks how the signal could fail before live routing is allowed.
 
 Live site: https://signal-autopsy.vercel.app
@@ -87,6 +89,8 @@ This is not financial advice or a production risk model. It is an interaction mo
 .
 ├── index.html                  # Main product page
 ├── docs.html                   # Build documentation
+├── logo.svg                    # App logo
+├── favicon.svg                 # Browser favicon
 ├── outputs/
 │   ├── signal-autopsy.html     # Local Codex output copy
 │   └── docs.html               # Local Codex output docs copy
