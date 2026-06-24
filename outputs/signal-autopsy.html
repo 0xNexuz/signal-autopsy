@@ -744,7 +744,7 @@
     .badge.amber { color: #ffe3ae; border-color: rgba(233,163,42,.32); background: rgba(233,163,42,.13); }
 
     .closing {
-      padding-bottom: 104px;
+      padding-bottom: 72px;
     }
 
     .close-panel {
@@ -813,6 +813,50 @@
     .toast.show {
       opacity: 1;
       transform: translateY(0);
+    }
+
+    .site-footer {
+      border-top: 1px solid rgba(255,255,255,.08);
+      padding: 28px 0 42px;
+      color: var(--muted);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .footer-inner strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--text);
+      letter-spacing: -.02em;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 0 12px;
+      background: rgba(255,255,255,.03);
+      color: var(--soft);
+      font-weight: 690;
+    }
+
+    .footer-links a:hover {
+      border-color: rgba(233,163,42,.45);
+      color: var(--text);
     }
 
     @media (max-width: 1120px) {
@@ -1052,6 +1096,19 @@
     </section>
   </main>
 
+  <footer class="shell site-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>Signal Autopsy</strong>
+        <span>Pre-trade failure intelligence for AI trading agents.</span>
+      </div>
+      <nav class="footer-links" aria-label="Documentation links">
+        <a href="https://www.bitget.com/api-doc/common/intro" target="_blank" rel="noreferrer">Bitget API docs</a>
+        <a href="docs.html">Build docs</a>
+      </nav>
+    </div>
+  </footer>
+
   <div class="toast" id="toast" role="status" aria-live="polite">Copied</div>
 
   <script>
@@ -1067,6 +1124,29 @@
 
     const $ = (id) => document.getElementById(id);
     const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+
+    function generatedThesis() {
+      const strategy = $("strategy").value;
+      const market = $("market").value;
+      const confidence = Number($("confidence").value);
+      const leverage = Number($("leverage").value);
+      const drift = Number($("drift").value);
+      const depth = Number($("depth").value);
+      const direction = drift >= 0 ? "upside drift" : "downside drift";
+      const depthState = depth >= 70 ? "the book shows deep support" : depth >= 42 ? "depth support is mixed but usable" : "depth is thin and must be treated as fragile";
+      const pressure = leverage >= 15 || confidence >= 82 ? "strict capital clamps are active" : "route sizing stays measured";
+      const playbooks = {
+        "Breakout continuation": `Inspect ${market} for continuation only if ${direction} is confirmed by broad momentum, ${depthState}, and ${pressure}. Reject the signal if confidence rises faster than depth quality.`,
+        "Mean reversion": `Inspect ${market} for mean reversion only if the ${direction} is exhausted, liquidity is not thinning, and ${pressure} so the route can survive a second move.`,
+        "Funding spread capture": `Inspect ${market} for funding capture only if spread conditions remain stable, ${depthState}, and ${pressure} to prevent the agent from over-sizing a temporary edge.`,
+        "Portfolio defense": `Inspect ${market} as a defensive hedge only if the move threatens portfolio exposure, ${depthState}, and ${pressure} so the hedge does not become a new risk source.`
+      };
+      return playbooks[strategy];
+    }
+
+    function updateGeneratedThesis() {
+      $("thesis").value = generatedThesis();
+    }
 
     function routeFor(score) {
       if (score >= 72) return ["Blocked", "Block live routing"];
@@ -1100,6 +1180,7 @@
     }
 
     function completeAutopsy({ record = false } = {}) {
+      updateGeneratedThesis();
       const confidence = Number($("confidence").value);
       const leverage = Number($("leverage").value);
       const drift = Number($("drift").value);
@@ -1181,6 +1262,7 @@
 
     function scheduleProbe() {
       clearTimeout(state.probeTimer);
+      updateGeneratedThesis();
       setProbing(true, "Sampling the changed inputs and rebuilding the failure map.");
       paintTimeline(76);
       state.probeTimer = setTimeout(() => {
@@ -1207,7 +1289,7 @@
     }
 
     $("autopsyForm").addEventListener("submit", runAutopsy);
-    ["market", "strategy", "thesis", "confidence", "leverage", "drift", "depth"].forEach((id) => {
+    ["market", "strategy", "confidence", "leverage", "drift", "depth"].forEach((id) => {
       $(id).addEventListener("input", scheduleProbe);
     });
     $("copyPlaybook").addEventListener("click", copyGuardrail);

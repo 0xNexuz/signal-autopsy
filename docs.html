@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Signal Autopsy Docs</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #090d12;
+      --panel: #151f29;
+      --line: #2c3a46;
+      --text: #eef3f7;
+      --muted: #94a3ad;
+      --soft: #cbd5dc;
+      --amber: #e9a32a;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(rgba(255,255,255,.026) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.026) 1px, transparent 1px),
+        radial-gradient(circle at 12% 8%, rgba(233, 163, 42, .18), transparent 24rem),
+        var(--ink);
+      background-size: 56px 56px, 56px 56px, auto, auto;
+      color: var(--text);
+    }
+
+    a { color: inherit; }
+
+    .shell {
+      width: min(980px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 72px;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 72px;
+      color: var(--muted);
+    }
+
+    .nav a {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 0 12px;
+      text-decoration: none;
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      max-width: 800px;
+      font-size: clamp(48px, 8vw, 104px);
+      line-height: .88;
+      letter-spacing: -.065em;
+    }
+
+    .lead {
+      max-width: 690px;
+      color: var(--soft);
+      font-size: 21px;
+      line-height: 1.45;
+      margin: 0 0 46px;
+    }
+
+    section {
+      border-top: 1px solid rgba(255,255,255,.1);
+      padding: 34px 0;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: clamp(27px, 4vw, 44px);
+      line-height: 1;
+      letter-spacing: -.045em;
+    }
+
+    p, li {
+      color: var(--soft);
+      line-height: 1.65;
+    }
+
+    code, pre {
+      font-family: "SFMono-Regular", Consolas, ui-monospace, monospace;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(21,31,41,.86);
+      padding: 16px;
+      color: #dce7ee;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(21,31,41,.76);
+      padding: 16px;
+    }
+
+    .card strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 760px) {
+      .grid { grid-template-columns: 1fr; }
+      .nav { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <nav class="nav" aria-label="Documentation navigation">
+      <strong>Signal Autopsy Docs</strong>
+      <a href="index.html">Back to product</a>
+    </nav>
+
+    <h1>How Signal Autopsy works.</h1>
+    <p class="lead">Signal Autopsy is a browser-based product prototype for pre-trade failure intelligence. It does not place orders. It turns an AI trading agent's thesis into a visible pre-mortem, guardrail, and audit event.</p>
+
+    <section>
+      <h2>1. Input Model</h2>
+      <p>The replay lab asks for market, strategy, confidence, leverage, 24h drift, and depth quality. Those inputs generate the live thesis and the failure map. The thesis changes as the controls change, so the agent story always matches the selected conditions.</p>
+    </section>
+
+    <section>
+      <h2>2. Fragility Score</h2>
+      <p>The score is a synthetic risk indicator for the prototype. It combines directional drift, confidence pressure, requested leverage, and weak depth. Higher scores mean the trade idea is more fragile before execution.</p>
+      <pre>fragility = 24
+  + abs(24h_drift) * 4.2
+  + max(0, confidence - 58) * 0.45
+  + leverage * 1.72
+  + max(0, 58 - depth_quality) * 0.48</pre>
+    </section>
+
+    <section>
+      <h2>3. Route Decisions</h2>
+      <div class="grid">
+        <div class="card"><strong>0-37</strong>Sandbox allow.</div>
+        <div class="card"><strong>38-54</strong>Guarded micro-test.</div>
+        <div class="card"><strong>55-71</strong>Paper or probe only.</div>
+        <div class="card"><strong>72+</strong>Block live routing.</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>4. Guardrail Compiler</h2>
+      <p>The guardrail output converts the verdict into machine-readable execution constraints: max leverage, live route permission, re-check timing, cancellation triggers, and the current thesis. A real implementation would pass that policy into an agent runner, exchange connector, or approval workflow.</p>
+    </section>
+
+    <section>
+      <h2>5. Ledger</h2>
+      <p>The ledger records intentional pre-mortem runs only. Slider previews update the analysis but do not write audit rows. This keeps the ledger reserved for decisions that the operator actually submitted.</p>
+    </section>
+
+    <section>
+      <h2>6. Bitget Integration Path</h2>
+      <p>The current build is static. The next production step is to connect market depth, ticker, funding, and order-routing data through the Bitget API. Start from the official docs linked in the product footer.</p>
+    </section>
+  </main>
+</body>
+</html>
