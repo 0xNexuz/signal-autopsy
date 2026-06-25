@@ -176,8 +176,15 @@
     </section>
 
     <section>
-      <h2>6. Bitget Integration Path</h2>
-      <p>The current build is static. The next production step is to connect market depth, ticker, funding, and order-routing data through the Bitget API. Start from the official docs linked in the product footer.</p>
+      <h2>6. Bitget Integration</h2>
+      <p>The current build connects to Bitget public spot market endpoints for ticker and order book data when the browser allows the request. The app derives 24h drift from ticker data and depth quality from the order book. If public data is blocked or unavailable, manual controls remain active as a fallback.</p>
+      <pre>ticker:    /api/v2/spot/market/tickers
+orderbook: /api/v2/spot/market/orderbook</pre>
+    </section>
+
+    <section>
+      <h2>7. No Database Yet</h2>
+      <p>The audit ledger is currently in-memory only. Refreshing the browser resets it. A production version should persist pre-mortem events, exported policies, operator approvals, and route outcomes in a backend database.</p>
     </section>
   </main>
 </body>

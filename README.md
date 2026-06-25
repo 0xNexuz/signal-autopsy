@@ -76,8 +76,12 @@ This is not financial advice or a production risk model. It is an interaction mo
 ## Key Features
 
 - Dynamic thesis generation based on market, strategy, confidence, leverage, drift, and depth.
+- Live Bitget public ticker and order book refresh with manual fallback.
 - Probing/loading state that makes the pre-mortem feel like an inspection process.
 - Guardrail compiler with max leverage, live-route permission, re-check timing, and cancel conditions.
+- Strategy-specific thresholds for route decisions.
+- JSON export for guardrail policies.
+- Front-end route-gate simulation for paper, guarded, sandbox, and blocked outcomes.
 - Audit ledger that records intentional pre-mortem submissions.
 - Product documentation page at `docs.html`.
 - Footer links to the official Bitget API docs and the build documentation.
@@ -120,14 +124,19 @@ main
 
 ## Bitget Integration Path
 
-The current version is static. A production version could integrate with Bitget APIs for:
+The current version uses Bitget public spot market data where browser access is available:
 
 - market tickers
 - order book depth
-- funding data
-- volatility snapshots
-- account risk settings
-- paper or live route enforcement
+
+Current endpoints:
+
+```text
+GET /api/v2/spot/market/tickers
+GET /api/v2/spot/market/orderbook
+```
+
+Future authenticated integrations could add funding data, account risk settings, paper trading, or live route enforcement.
 
 Official Bitget API docs:
 
@@ -137,12 +146,11 @@ https://www.bitget.com/api-doc/common/intro
 
 ## Next Steps
 
-- Replace synthetic scoring with live market data inputs.
+- Extend live market data inputs beyond ticker and order book depth.
 - Add authenticated paper-trading mode.
 - Store pre-mortem ledger events in a database.
-- Export guardrails as JSON policies.
-- Add strategy-specific thresholds.
-- Connect Bitget API data for depth, funding, and tickers.
+- Connect authenticated execution workflows.
+- Add production-grade strategy calibration.
 
 ## Disclaimer
 

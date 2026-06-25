@@ -383,6 +383,42 @@
       gap: 12px;
     }
 
+    .live-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 8px;
+      background: rgba(255,255,255,.035);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      display: inline-block;
+      margin-right: 8px;
+      border-radius: 50%;
+      background: var(--amber);
+      box-shadow: 0 0 0 5px rgba(233,163,42,.1);
+    }
+
+    .live-dot.ok {
+      background: var(--green);
+      box-shadow: 0 0 0 5px rgba(102,208,144,.12);
+    }
+
+    .live-dot.warn {
+      background: var(--red);
+      box-shadow: 0 0 0 5px rgba(240,111,98,.12);
+    }
+
     .range-row {
       display: grid;
       grid-template-columns: 1fr 54px;
@@ -660,6 +696,23 @@
       color: #dce7ee;
       font-size: 13px;
       line-height: 1.55;
+    }
+
+    .execution-panel {
+      margin-top: 12px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 8px;
+      background: rgba(255,255,255,.035);
+      padding: 14px;
+      color: var(--soft);
+      line-height: 1.5;
+      min-height: 88px;
+    }
+
+    .execution-panel strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text);
     }
 
     .ledger {
@@ -962,6 +1015,11 @@
             </div>
           </div>
 
+          <div class="live-strip">
+            <span><i class="live-dot" id="marketDot"></i><span id="marketStatus">Manual inputs active. Refresh to pull Bitget public market data.</span></span>
+            <button class="btn btn-ghost" id="refreshMarket" type="button">Refresh Bitget data</button>
+          </div>
+
           <div style="margin-top:14px">
             <label for="thesis">Agent thesis</label>
             <textarea id="thesis">Enter long only if momentum is broad, the move is not isolated to one candle, and exit pressure remains contained.</textarea>
@@ -1054,7 +1112,15 @@
         <aside class="card playbook">
           <label for="playbookText">Compiled guardrail</label>
           <pre id="playbookText"></pre>
-          <button class="btn btn-ghost" id="copyPlaybook" type="button" style="margin-top:16px">Copy guardrail</button>
+          <div class="hero-actions" style="margin-top:16px">
+            <button class="btn btn-ghost" id="copyPlaybook" type="button">Copy guardrail</button>
+            <button class="btn btn-ghost" id="exportPolicy" type="button">Export JSON</button>
+            <button class="btn btn-primary" id="enforceRoute" type="button">Simulate route gate</button>
+          </div>
+          <div class="execution-panel" id="executionPanel">
+            <strong>Execution gate idle</strong>
+            Run a pre-mortem, then simulate enforcement to see whether the route would be allowed, clamped, papered, or blocked.
+          </div>
         </aside>
       </div>
     </section>
@@ -1111,11 +1177,23 @@
         { time: "08:52", signal: "SOLUSDT portfolio defense", route: "Guarded", score: 44 },
         { time: "08:27", signal: "BGBUSDT funding spread capture", route: "Paper", score: 53 }
       ],
-      probeTimer: null
+      probeTimer: null,
+      lastPolicy: null,
+      marketSource: "manual"
     };
 
     const $ = (id) => document.getElementById(id);
     const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+    const strategyRules = {
+      "Breakout continuation": { offset: 4, guarded: 40, paper: 56, block: 72, recheck: "10m", cancel: "momentum breadth fails, depth weakens, or drift reverses" },
+      "Mean reversion": { offset: 1, guarded: 36, paper: 53, block: 70, recheck: "8m", cancel: "move extends beyond invalidation or liquidity thins" },
+      "Funding spread capture": { offset: -2, guarded: 42, paper: 60, block: 76, recheck: "15m", cancel: "spread compresses, funding edge fades, or book imbalance rises" },
+      "Portfolio defense": { offset: -5, guarded: 34, paper: 50, block: 68, recheck: "5m", cancel: "hedge increases net exposure or depth cannot support unwind" }
+    };
+
+    function currentRule() {
+      return strategyRules[$("strategy").value] || strategyRules["Breakout continuation"];
+    }
 
     function generatedThesis() {
       const strategy = $("strategy").value;
@@ -1141,10 +1219,16 @@
     }
 
     function routeFor(score) {
-      if (score >= 72) return ["Blocked", "Block live routing"];
-      if (score >= 55) return ["Paper", "Probe only"];
-      if (score >= 38) return ["Guarded", "Guarded micro-test"];
+      const rule = currentRule();
+      if (score >= rule.block) return ["Blocked", "Block live routing"];
+      if (score >= rule.paper) return ["Paper", "Probe only"];
+      if (score >= rule.guarded) return ["Guarded", "Guarded micro-test"];
       return ["Allowed", "Sandbox allow"];
+    }
+
+    function updateMarketStatus(text, mode = "") {
+      $("marketStatus").textContent = text;
+      $("marketDot").className = `live-dot ${mode}`;
     }
 
     function paintTimeline(score) {
@@ -1171,18 +1255,72 @@
       }
     }
 
+    function normalizeTicker(row) {
+      const rawChange = Number(row.changeUtc24h ?? row.change24h ?? 0);
+      return {
+        price: Number(row.lastPr || row.close || row.last || 0),
+        drift: Math.abs(rawChange) <= 1 ? rawChange * 100 : rawChange,
+        quoteVolume: Number(row.quoteVolume || row.usdtVolume || row.baseVolume || 0)
+      };
+    }
+
+    function depthQualityFromOrderbook(book) {
+      const asks = book.asks || [];
+      const bids = book.bids || [];
+      if (!asks.length || !bids.length) return 45;
+      const ask0 = Number(asks[0][0]);
+      const bid0 = Number(bids[0][0]);
+      const mid = (ask0 + bid0) / 2;
+      const spreadBps = mid ? ((ask0 - bid0) / mid) * 10000 : 25;
+      const notional = [...asks.slice(0, 20), ...bids.slice(0, 20)]
+        .reduce((sum, [price, size]) => sum + Number(price) * Number(size), 0);
+      const notionalScore = clamp(Math.log10(Math.max(1, notional)) * 13, 10, 85);
+      const spreadPenalty = clamp(spreadBps * 1.6, 0, 42);
+      return Math.round(clamp(notionalScore + 22 - spreadPenalty, 5, 100));
+    }
+
+    async function refreshBitgetData() {
+      const symbol = $("market").value;
+      clearTimeout(state.probeTimer);
+      setProbing(true, `Pulling public Bitget ticker and order book for ${symbol}.`);
+      updateMarketStatus(`Fetching Bitget public data for ${symbol}...`);
+      try {
+        const [tickerRes, bookRes] = await Promise.all([
+          fetch(`https://api.bitget.com/api/v2/spot/market/tickers?symbol=${encodeURIComponent(symbol)}`, { cache: "no-store" }),
+          fetch(`https://api.bitget.com/api/v2/spot/market/orderbook?symbol=${encodeURIComponent(symbol)}&type=step0&limit=100`, { cache: "no-store" })
+        ]);
+        if (!tickerRes.ok || !bookRes.ok) throw new Error("Bitget public endpoint unavailable");
+        const tickerJson = await tickerRes.json();
+        const bookJson = await bookRes.json();
+        const ticker = normalizeTicker((tickerJson.data || [])[0] || {});
+        if (!ticker.price) throw new Error("Ticker response missing price");
+        $("drift").value = clamp(ticker.drift, -9, 9).toFixed(1);
+        $("depth").value = depthQualityFromOrderbook(bookJson.data || {});
+        state.marketSource = "bitget";
+        updateMarketStatus(`${symbol} live from Bitget: ${ticker.drift.toFixed(2)}% 24h drift, depth ${$("depth").value}.`, "ok");
+      } catch (error) {
+        state.marketSource = "manual";
+        updateMarketStatus("Bitget public data could not be loaded in this browser. Manual controls remain active.", "warn");
+      }
+      completeAutopsy({ record: false });
+      setProbing(false);
+    }
+
     function completeAutopsy({ record = false } = {}) {
       updateGeneratedThesis();
       const confidence = Number($("confidence").value);
       const leverage = Number($("leverage").value);
       const drift = Number($("drift").value);
       const depth = Number($("depth").value);
-      const contradiction = Math.abs(drift) * 4.2 + Math.max(0, confidence - 58) * .45 + leverage * 1.72 + Math.max(0, 58 - depth) * .48;
+      const rule = currentRule();
+      const contradiction = Math.abs(drift) * 4.2 + Math.max(0, confidence - 58) * .45 + leverage * 1.72 + Math.max(0, 58 - depth) * .48 + rule.offset;
       const score = clamp(Math.round(24 + contradiction), 8, 96);
       const [route, verdict] = routeFor(score);
       const slippage = clamp(Math.round(80 - depth + leverage * 1.8), 5, 96);
       const conflict = clamp(Math.round(Math.abs(drift) * 8 + Math.max(0, confidence - 50) * .55), 8, 96);
       const pressure = clamp(Math.round(leverage * 3.1 + confidence * .34), 8, 96);
+      const maxLeverage = Math.max(1, Math.floor(leverage * (route === "Blocked" ? .25 : route === "Paper" ? .5 : route === "Guarded" ? .72 : 1)));
+      const liveAllowed = route === "Allowed" || route === "Guarded";
 
       $("score").textContent = score;
       $("dial").style.setProperty("--score", score);
@@ -1209,21 +1347,40 @@
         ["Contradiction", `${conflict}/100 from drift and confidence mismatch.`],
         ["Execution pressure", `${pressure}/100 from leverage and capital intent.`],
         ["Depth strain", `${slippage}/100 estimated slippage exposure.`],
-        ["Route", `${route}; re-check in 15 minutes or on state change.`]
+        ["Route", `${route}; strategy threshold ${rule.paper}/${rule.block}; re-check in ${rule.recheck}.`]
       ].map(([title, text]) => `<div class="finding"><b>${title}</b>${text}</div>`).join("");
+
+      state.lastPolicy = {
+        app: "Signal Autopsy",
+        generatedAt: new Date().toISOString(),
+        market: $("market").value,
+        strategy: $("strategy").value,
+        marketSource: state.marketSource,
+        inputs: { confidence, requestedLeverage: leverage, drift24hPercent: drift, depthQuality: depth },
+        strategyThresholds: { guarded: rule.guarded, paper: rule.paper, block: rule.block },
+        diagnostics: { fragilityScore: score, contradiction: conflict, executionPressure: pressure, depthStrain: slippage },
+        decision: { route, verdict, liveRouteAllowed: liveAllowed, maxLeverage, recheckAfter: rule.recheck },
+        enforcement: {
+          mode: route === "Blocked" ? "block" : route === "Paper" ? "paper-only" : route === "Guarded" ? "guarded-route" : "sandbox-route",
+          cancelIf: rule.cancel
+        },
+        thesis: $("thesis").value.trim()
+      };
 
       $("playbookText").textContent = [
         "SIGNAL AUTOPSY GUARDRAIL",
         `market = ${$("market").value}`,
         `strategy = ${$("strategy").value}`,
+        `market_source = ${state.marketSource}`,
         `fragility_score = ${score}`,
+        `strategy_thresholds = guarded:${rule.guarded}, paper:${rule.paper}, block:${rule.block}`,
         `route = ${route}`,
         "",
         "requirements:",
-        `- max_leverage = ${Math.max(1, Math.floor(leverage * (score >= 55 ? .5 : .72)))}x`,
-        `- live_route_allowed = ${score < 55}`,
-        "- recheck_after = 15m",
-        "- cancel_if = drift reverses, depth weakens, or confidence rises without confirmation",
+        `- max_leverage = ${maxLeverage}x`,
+        `- live_route_allowed = ${liveAllowed}`,
+        `- recheck_after = ${rule.recheck}`,
+        `- cancel_if = ${rule.cancel}`,
         "",
         `thesis = ${$("thesis").value.trim()}`
       ].join("\n");
@@ -1280,11 +1437,45 @@
       setTimeout(() => $("toast").classList.remove("show"), 1600);
     }
 
+    function exportPolicyJson() {
+      if (!state.lastPolicy) completeAutopsy({ record: false });
+      const blob = new Blob([JSON.stringify(state.lastPolicy, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `signal-autopsy-${state.lastPolicy.market.toLowerCase()}-${Date.now()}.json`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      $("toast").textContent = "Policy JSON exported";
+      $("toast").classList.add("show");
+      setTimeout(() => $("toast").classList.remove("show"), 1600);
+    }
+
+    function simulateRouteGate() {
+      if (!state.lastPolicy) completeAutopsy({ record: false });
+      const policy = state.lastPolicy;
+      const copy = {
+        block: `Live order blocked. The agent must re-check in ${policy.decision.recheckAfter} and satisfy: ${policy.enforcement.cancelIf}.`,
+        "paper-only": `Live route denied. Signal is redirected to paper execution with max leverage ${policy.decision.maxLeverage}x.`,
+        "guarded-route": `Guarded route allowed. Live execution is capped at ${policy.decision.maxLeverage}x with cancel condition: ${policy.enforcement.cancelIf}.`,
+        "sandbox-route": `Sandbox route allowed. Policy remains attached for audit and re-check in ${policy.decision.recheckAfter}.`
+      };
+      $("executionPanel").innerHTML = `<strong>${policy.decision.verdict}</strong>${copy[policy.enforcement.mode]}`;
+      $("toast").textContent = "Route gate simulated";
+      $("toast").classList.add("show");
+      setTimeout(() => $("toast").classList.remove("show"), 1600);
+    }
+
     $("autopsyForm").addEventListener("submit", runAutopsy);
     ["market", "strategy", "confidence", "leverage", "drift", "depth"].forEach((id) => {
       $(id).addEventListener("input", scheduleProbe);
     });
     $("copyPlaybook").addEventListener("click", copyGuardrail);
+    $("exportPolicy").addEventListener("click", exportPolicyJson);
+    $("enforceRoute").addEventListener("click", simulateRouteGate);
+    $("refreshMarket").addEventListener("click", refreshBitgetData);
 
     renderLedger();
     completeAutopsy({ record: false });
