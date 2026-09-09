@@ -1,21 +1,37 @@
 # API Keys Setup
 
-Paste your Bitget API credentials into:
+Signal Autopsy now has server-side Vercel API routes. Secrets belong in .env.local for local development and in Vercel Project Settings for the deployment. They must never be placed in index.html, app.js, or Git.
 
-```text
-.env.local
-```
+## Bitget RSA
 
-Use this format:
+Use the passphrase you created when generating the Bitget API key. Keep spot/UTA trade permission enabled. IP restrictions are configured in Bitget's API management screen; add the fixed egress IP of the server that will execute orders. Vercel does not provide a fixed outbound IP on every plan, so keep execution in simulated mode unless the deployment has approved static egress.
 
-```env
-BITGET_API_KEY=your_key_here
-BITGET_API_SECRET=your_secret_here
-BITGET_API_PASSPHRASE=your_passphrase_here
+~~~env
+BITGET_API_KEY=your_key
+BITGET_PASSPHRASE=your_passphrase
+BITGET_RSA_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nyour_key_material\n-----END PRIVATE KEY-----"
 BITGET_BASE_URL=https://api.bitget.com
-BITGET_TRADING_MODE=paper
-```
+~~~
 
-Do not put keys in `index.html`, `docs.html`, frontend JavaScript, README, or any file that will be pushed to GitHub.
+The official Agent Hub SDK currently signs authenticated calls with HMAC. Signal Autopsy therefore uses Agent Hub's read-only market intent for public UTA v3 ticker data and its own official-spec RSA signer for authenticated Reality depth and Reality orders.
 
-Important: the current app is still a static frontend. `.env.local` prepares the project for a backend/API route, but browser JavaScript cannot securely use private exchange keys. When live account actions are added, the backend should read `.env.local`, sign Bitget requests, and return only safe results to the frontend.
+## Safety Controls
+
+~~~env
+RECEIPT_SIGNING_SECRET=use_a_long_random_server_only_secret
+BITGET_EXECUTION_MODE=simulated
+BITGET_LIVE_ACK=
+~~~
+
+The route gate is machine-enforced in both modes. To deliberately arm real order submission, set BITGET_EXECUTION_MODE=live and BITGET_LIVE_ACK=I_UNDERSTAND_REAL_ORDERS. A valid REAL-signed, unexpired receipt must still pass symbol, side, route, and notional checks.
+
+## Qwen
+
+~~~env
+BITGET_QWEN_API_KEY=your_s2_qwen_key
+QWEN_BASE_URL=https://hackathon.bitgetops.com/v1
+QWEN_MODEL=qwen3.8-max
+QWEN_WIRE_API=responses
+~~~
+
+The S2 subsidy key uses Bitget's Qwen proxy and the Responses wire format. A standard DASHSCOPE_API_KEY remains supported as a fallback. Qwen only produces an adversarial examination. It cannot set the risk score or authorize execution.

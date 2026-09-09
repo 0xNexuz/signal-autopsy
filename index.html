@@ -908,6 +908,66 @@
       color: var(--text);
     }
 
+    .status-line {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 25px;
+      padding: 3px 8px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 4px;
+      color: var(--soft);
+      font: 700 10px/1 var(--mono);
+      letter-spacing: .08em;
+    }
+
+    .status-tag.real { color: #a8dfbd; border-color: rgba(83,187,122,.35); }
+    .status-tag.simulated { color: #f4c66f; border-color: rgba(233,163,42,.38); }
+    .status-tag.demo { color: #c9b8f6; border-color: rgba(159,123,238,.38); }
+
+    .examiner {
+      margin-top: 18px;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: .72fr 1.28fr;
+      gap: 24px;
+    }
+
+    .examiner h3, .memory-head h3 { margin: 0 0 8px; font-size: 18px; }
+    .examiner p, .memory-head p { margin: 0; color: var(--muted); line-height: 1.55; }
+    .examiner-output { border-left: 1px solid var(--line); padding-left: 22px; color: var(--soft); line-height: 1.55; }
+    .examiner-output strong { color: var(--text); display: block; margin-bottom: 5px; }
+
+    .memory-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 18px 20px;
+      margin-top: 16px;
+    }
+
+    .benchmark-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .metric {
+      padding: 18px;
+    }
+
+    .metric span { display: block; color: var(--muted); font-size: 12px; }
+    .metric strong { display: block; margin: 7px 0 4px; font: 700 28px/1 var(--mono); }
+    .metric small { color: var(--soft); }
+    .fine-print { margin-top: 12px; color: var(--muted); font-size: 12px; line-height: 1.55; }
+
     @media (max-width: 1120px) {
       .hero, .lab, .compiler, .ledger { grid-template-columns: 1fr; }
       .instrument { min-height: 560px; }
@@ -949,6 +1009,7 @@
       <a href="#replay">Replay Lab</a>
       <a href="#guardrails">Guardrails</a>
       <a href="#ledger">Ledger</a>
+      <a href="#benchmark">Benchmark</a>
       <a class="btn btn-primary" href="#replay">Run a pre-mortem</a>
     </nav>
   </header>
@@ -956,14 +1017,15 @@
   <main>
     <section class="shell hero">
       <div>
-        <span class="kicker">Pre-trade failure intelligence</span>
+        <span class="kicker">24/7 rToken agent safety harness</span>
         <h1>Find the weak point before the order.</h1>
-        <p class="lead">Signal Autopsy turns an agent's trade idea into a replayable pre-mortem: market state, execution pressure, contradiction, guardrails, and a signed decision trail.</p>
+        <p class="lead">Signal Autopsy stands between an autonomous agent and Bitget Reality execution. It examines every tokenized-US-equity intent, applies deterministic risk limits, and emits a signed decision receipt before a route can open.</p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="#replay">Inspect a signal</a>
           <a class="btn btn-ghost" href="#guardrails">View guardrail compiler</a>
         </div>
-        <p class="rail-note">Built for teams that need AI trading agents to explain what can go wrong before they ask for capital, leverage, or live execution.</p>
+        <p class="rail-note">Built for operators who need always-on rToken agents to fail closed across overnight liquidity, US sessions, event shocks, and model overconfidence.</p>
+        <div class="status-line"><span class="status-tag real">REAL UTA V3 DATA</span><span class="status-tag real">REAL ROUTE GATE</span><span class="status-tag simulated">SIMULATED EXECUTION DEFAULT</span></div>
       </div>
 
       <div class="instrument" aria-label="Signal Autopsy instrument preview">
@@ -973,14 +1035,14 @@
             <h3>Failure Map</h3>
             <span class="verdict-chip" id="heroVerdict">Probe only</span>
             <div class="meter">
-              <div class="meter-row"><span>Contradict</span><div class="bar"><i id="heroM1" style="width:64%"></i></div><span id="heroV1">64</span></div>
-              <div class="meter-row"><span>Slippage</span><div class="bar"><i id="heroM2" style="width:41%"></i></div><span id="heroV2">41</span></div>
-              <div class="meter-row"><span>Leverage</span><div class="bar"><i id="heroM3" style="width:72%"></i></div><span id="heroV3">72</span></div>
+              <div class="meter-row"><span>Session</span><div class="bar"><i id="heroM1" style="width:72%"></i></div><span id="heroV1">72</span></div>
+              <div class="meter-row"><span>Liquidity</span><div class="bar"><i id="heroM2" style="width:41%"></i></div><span id="heroV2">41</span></div>
+              <div class="meter-row"><span>Size</span><div class="bar"><i id="heroM3" style="width:58%"></i></div><span id="heroV3">58</span></div>
             </div>
           </div>
           <div class="mini-panel">
             <h3>Decision</h3>
-            <p id="heroDecision" style="margin:0;color:var(--soft);line-height:1.48">Hold live routing. Force paper execution until fragility cools below 45.</p>
+            <p id="heroDecision" style="margin:0;color:var(--soft);line-height:1.48">No order can route without a valid, unexpired autopsy receipt.</p>
           </div>
         </div>
       </div>
@@ -988,8 +1050,8 @@
 
     <section id="replay" class="shell">
       <div class="section-head">
-        <h2>Replay a signal like an incident report.</h2>
-        <p>Feed the lab a thesis, market, confidence, and leverage profile. The system grades where the agent is brittle, then returns a decision that can be replayed later.</p>
+        <h2>Replay an rToken intent like an incident report.</h2>
+        <p>Inspect a 24/7 Reality order across session, liquidity, event, volatility, size, and overconfidence risk before the agent reaches execution.</p>
       </div>
 
       <div class="lab">
@@ -998,65 +1060,74 @@
             <div>
               <label for="market">Market</label>
               <select id="market">
-                <option value="BTCUSDT">BTCUSDT</option>
-                <option value="ETHUSDT">ETHUSDT</option>
-                <option value="SOLUSDT">SOLUSDT</option>
-                <option value="BGBUSDT">BGBUSDT</option>
+                <option value="rAAPLUSDT">rAAPLUSDT</option>
+                <option value="rNVDAUSDT">rNVDAUSDT</option>
+                <option value="rTSLAUSDT">rTSLAUSDT</option>
+                <option value="rMSFTUSDT">rMSFTUSDT</option>
+                <option value="rSPYUSDT">rSPYUSDT</option>
+                <option value="rQQQUSDT">rQQQUSDT</option>
               </select>
             </div>
             <div>
               <label for="strategy">Agent strategy</label>
               <select id="strategy">
-                <option>Breakout continuation</option>
-                <option>Mean reversion</option>
-                <option>Funding spread capture</option>
-                <option>Portfolio defense</option>
+                <option>Session handoff momentum</option>
+                <option>Overnight liquidity reversion</option>
+                <option>Earnings event defense</option>
+                <option>Index hedge rotation</option>
               </select>
             </div>
           </div>
 
           <div class="live-strip">
-            <span><i class="live-dot" id="marketDot"></i><span id="marketStatus">Manual inputs active. Refresh to pull Bitget public market data.</span></span>
-            <button class="btn btn-ghost" id="refreshMarket" type="button">Refresh Bitget data</button>
+            <span><i class="live-dot" id="marketDot"></i><span id="marketStatus">Load Bitget Reality data before issuing a receipt.</span></span>
+            <button class="btn btn-ghost" id="refreshMarket" type="button">Load Reality data</button>
           </div>
 
           <div style="margin-top:14px">
             <label for="thesis">Agent thesis</label>
-            <textarea id="thesis">Enter long only if momentum is broad, the move is not isolated to one candle, and exit pressure remains contained.</textarea>
+            <textarea id="thesis">Enter rAAPLUSDT only if the session handoff preserves momentum, Reality liquidity supports the requested size, and no event risk invalidates the continuation.</textarea>
+          </div>
+
+          <div class="field-grid" style="margin-top:14px">
+            <div>
+              <label for="side">Order side</label>
+              <select id="side"><option value="buy">Buy</option><option value="sell">Sell</option></select>
+            </div>
+            <div>
+              <label for="eventRisk">Event risk</label>
+              <div class="range-row">
+                <input id="eventRisk" type="range" min="0" max="100" value="35">
+                <span class="mono" id="eventRiskOut">35</span>
+              </div>
+            </div>
           </div>
 
           <div class="field-grid" style="margin-top:14px">
             <div>
               <label for="confidence">Agent confidence</label>
               <div class="range-row">
-                <input id="confidence" type="range" min="10" max="95" value="68">
-                <span class="mono" id="confidenceOut">68%</span>
+                <input id="confidence" type="range" min="10" max="99" value="78">
+                <span class="mono" id="confidenceOut">78%</span>
               </div>
             </div>
             <div>
-              <label for="leverage">Requested leverage</label>
+              <label for="evidence">Evidence quality</label>
               <div class="range-row">
-                <input id="leverage" type="range" min="1" max="25" value="7">
-                <span class="mono" id="leverageOut">7x</span>
+                <input id="evidence" type="range" min="5" max="100" value="56">
+                <span class="mono" id="evidenceOut">56</span>
               </div>
             </div>
           </div>
 
           <div class="field-grid" style="margin-top:14px">
-            <div>
-              <label for="drift">24h market drift</label>
-              <div class="range-row">
-                <input id="drift" type="range" min="-9" max="9" value="-2" step=".1">
-                <span class="mono" id="driftOut">-2.0%</span>
-              </div>
-            </div>
-            <div>
-              <label for="depth">Depth quality</label>
-              <div class="range-row">
-                <input id="depth" type="range" min="5" max="100" value="62">
-                <span class="mono" id="depthOut">62</span>
-              </div>
-            </div>
+            <div><label for="notional">Requested notional (USDT)</label><input id="notional" type="number" min="10" step="10" value="1000"></div>
+            <div><label for="depthNotional">Observed depth notional</label><input id="depthNotional" type="number" min="1" value="12000" readonly></div>
+          </div>
+
+          <div class="field-grid" style="margin-top:14px">
+            <div><label for="drift">24h Reality drift</label><div class="range-row"><input id="drift" type="range" min="-15" max="15" value="-2" step=".1" disabled><span class="mono" id="driftOut">-2.0%</span></div></div>
+            <div><label for="depth">Liquidity quality</label><div class="range-row"><input id="depth" type="range" min="5" max="100" value="62" disabled><span class="mono" id="depthOut">62</span></div></div>
           </div>
 
           <button class="btn btn-primary" id="runProbe" type="submit" style="width:100%;margin-top:16px">Run pre-mortem</button>
@@ -1067,7 +1138,7 @@
           <div class="probe-overlay" id="probeOverlay" aria-live="polite" aria-hidden="true">
             <div class="probe-card">
               <strong id="probeTitle">Probing signal</strong>
-              <span id="probeCopy">Replaying thesis against drift, depth, confidence, and leverage pressure.</span>
+              <span id="probeCopy">Checking six deterministic risk components and requesting an adversarial examination.</span>
               <span class="probe-dots" aria-hidden="true"><i></i><i></i><i></i></span>
             </div>
           </div>
@@ -1075,12 +1146,21 @@
             <div class="score-dial" id="dial"><strong id="score">61</strong></div>
             <div class="readout">
               <h3 id="verdict">Probe only</h3>
-              <p id="readout">The agent has enough evidence to observe, but confidence and leverage are ahead of market confirmation.</p>
+              <p id="readout">Submit the Reality intent to receive a deterministic route and signed authorization receipt.</p>
               <div class="findings" id="findings"></div>
             </div>
           </div>
         </div>
       </div>
+
+      <article class="card examiner">
+        <div>
+          <h3>Qwen adversarial examiner</h3>
+          <p>Challenges the thesis and asks for missing evidence. Its output is advisory and is never allowed to change the deterministic route.</p>
+          <div class="status-line"><span class="status-tag demo" id="qwenStatus">DEMO UNTIL CONFIGURED</span><span class="status-tag real">ADVISORY ONLY</span></div>
+        </div>
+        <div class="examiner-output" id="examinerOutput"><strong>Awaiting a pre-mortem</strong>The examiner will surface the strongest countercase, hidden assumptions, and evidence requests.</div>
+      </article>
     </section>
 
     <section id="guardrails" class="shell">
@@ -1093,11 +1173,11 @@
         <div class="rules">
           <article class="card rule" data-index="01">
             <h3>Route gate</h3>
-            <p>Block live execution when fragility crosses the configured ceiling. Permit sandbox or paper routes only.</p>
+            <p>Reject missing, altered, expired, wrong-symbol, wrong-side, or oversized receipt requests server-side.</p>
           </article>
           <article class="card rule" data-index="02">
-            <h3>Leverage clamp</h3>
-            <p>Convert weak confirmation into lower leverage rather than a binary allow/deny workflow.</p>
+            <h3>Notional clamp</h3>
+            <p>Turn elevated size risk into a signed maximum notional rather than a suggestion in the interface.</p>
           </article>
           <article class="card rule" data-index="03">
             <h3>Re-check clock</h3>
@@ -1115,11 +1195,11 @@
           <div class="hero-actions" style="margin-top:16px">
             <button class="btn btn-ghost" id="copyPlaybook" type="button">Copy guardrail</button>
             <button class="btn btn-ghost" id="exportPolicy" type="button">Export JSON</button>
-            <button class="btn btn-primary" id="enforceRoute" type="button">Simulate route gate</button>
+            <button class="btn btn-primary" id="enforceRoute" type="button">Enforce signed gate</button>
           </div>
           <div class="execution-panel" id="executionPanel">
             <strong>Execution gate idle</strong>
-            Run a pre-mortem, then simulate enforcement to see whether the route would be allowed, clamped, papered, or blocked.
+            Run a pre-mortem, then send its signed receipt through the server-side gate.
           </div>
         </aside>
       </div>
@@ -1141,13 +1221,30 @@
           <div class="row"><span>Time</span><span>Signal</span><span>Route</span><span>Score</span></div>
         </div>
       </div>
+      <article class="card memory-head">
+        <div><h3>Failure Memory</h3><p id="memoryStatus">Later market prices score whether the latest intervention was correct, a false positive, or a missed risk.</p></div>
+        <button class="btn btn-ghost" id="evaluateMemory" type="button">Evaluate latest receipt</button>
+      </article>
+    </section>
+
+    <section id="benchmark" class="shell">
+      <div class="section-head">
+        <h2>Frozen historical benchmark.</h2>
+        <p>A fixed Reality candle fixture compares identical intents with the agent alone and with Signal Autopsy's deterministic intervention policy.</p>
+      </div>
+      <div class="benchmark-grid">
+        <article class="card metric"><span>Agent-alone drawdown</span><strong id="benchAlone">Pending</strong><small>SIMULATED POLICY ON REAL CANDLES</small></article>
+        <article class="card metric"><span>With Signal Autopsy</span><strong id="benchHarness">Pending</strong><small>SIMULATED POLICY ON REAL CANDLES</small></article>
+        <article class="card metric"><span>Loss avoided</span><strong id="benchDelta">Pending</strong><small id="benchCount">Frozen fixture not loaded</small></article>
+      </div>
+      <p class="fine-print" id="benchmarkNote">The benchmark is deterministic and reproducible; it is not a profitability claim or financial advice.</p>
     </section>
 
     <section class="shell closing">
       <div class="card close-panel">
         <div class="close-inner">
           <h2>Give every agent a failure memory.</h2>
-          <p>Before live orders, before leverage, before a clean-looking backtest, run the signal through a pre-mortem.</p>
+          <p>Before an always-on rToken agent routes an order, require a signed, unexpired autopsy receipt.</p>
           <a class="btn btn-primary" href="#replay">Start with a signal</a>
         </div>
       </div>
@@ -1158,10 +1255,13 @@
     <div class="footer-inner">
       <div>
         <strong>Signal Autopsy</strong>
-        <span>Pre-trade failure intelligence for AI trading agents.</span>
+        <span>Deterministic pre-trade safety for 24/7 Bitget Reality agents.</span>
       </div>
       <nav class="footer-links" aria-label="Documentation links">
-        <a href="https://www.bitget.com/api-doc/common/intro" target="_blank" rel="noreferrer">Bitget API docs</a>
+        <a href="https://github.com/Bitget-AI/agent_hub" target="_blank" rel="noreferrer">Agent Hub</a>
+        <a href="https://www.bitget.com/api-doc/uta/reality/reality-trading-guide" target="_blank" rel="noreferrer">Reality API</a>
+        <a href="https://www.bitget.com/docs/uta/quick-start" target="_blank" rel="noreferrer">UTA v3 docs</a>
+        <a href="https://www.alibabacloud.com/help/en/model-studio/first-api-call-to-qwen" target="_blank" rel="noreferrer">Qwen docs</a>
         <a href="docs.html">Build docs</a>
       </nav>
     </div>
@@ -1169,316 +1269,6 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite">Copied</div>
 
-  <script>
-    const state = {
-      rows: [
-        { time: "09:41", signal: "BTCUSDT breakout continuation", route: "Paper", score: 61 },
-        { time: "09:18", signal: "ETHUSDT mean reversion", route: "Blocked", score: 78 },
-        { time: "08:52", signal: "SOLUSDT portfolio defense", route: "Guarded", score: 44 },
-        { time: "08:27", signal: "BGBUSDT funding spread capture", route: "Paper", score: 53 }
-      ],
-      probeTimer: null,
-      lastPolicy: null,
-      marketSource: "manual"
-    };
-
-    const $ = (id) => document.getElementById(id);
-    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-    const strategyRules = {
-      "Breakout continuation": { offset: 4, guarded: 40, paper: 56, block: 72, recheck: "10m", cancel: "momentum breadth fails, depth weakens, or drift reverses" },
-      "Mean reversion": { offset: 1, guarded: 36, paper: 53, block: 70, recheck: "8m", cancel: "move extends beyond invalidation or liquidity thins" },
-      "Funding spread capture": { offset: -2, guarded: 42, paper: 60, block: 76, recheck: "15m", cancel: "spread compresses, funding edge fades, or book imbalance rises" },
-      "Portfolio defense": { offset: -5, guarded: 34, paper: 50, block: 68, recheck: "5m", cancel: "hedge increases net exposure or depth cannot support unwind" }
-    };
-
-    function currentRule() {
-      return strategyRules[$("strategy").value] || strategyRules["Breakout continuation"];
-    }
-
-    function generatedThesis() {
-      const strategy = $("strategy").value;
-      const market = $("market").value;
-      const confidence = Number($("confidence").value);
-      const leverage = Number($("leverage").value);
-      const drift = Number($("drift").value);
-      const depth = Number($("depth").value);
-      const direction = drift >= 0 ? "upside drift" : "downside drift";
-      const depthState = depth >= 70 ? "the book shows deep support" : depth >= 42 ? "depth support is mixed but usable" : "depth is thin and must be treated as fragile";
-      const pressure = leverage >= 15 || confidence >= 82 ? "strict capital clamps are active" : "route sizing stays measured";
-      const playbooks = {
-        "Breakout continuation": `Inspect ${market} for continuation only if ${direction} is confirmed by broad momentum, ${depthState}, and ${pressure}. Reject the signal if confidence rises faster than depth quality.`,
-        "Mean reversion": `Inspect ${market} for mean reversion only if the ${direction} is exhausted, liquidity is not thinning, and ${pressure} so the route can survive a second move.`,
-        "Funding spread capture": `Inspect ${market} for funding capture only if spread conditions remain stable, ${depthState}, and ${pressure} to prevent the agent from over-sizing a temporary edge.`,
-        "Portfolio defense": `Inspect ${market} as a defensive hedge only if the move threatens portfolio exposure, ${depthState}, and ${pressure} so the hedge does not become a new risk source.`
-      };
-      return playbooks[strategy];
-    }
-
-    function updateGeneratedThesis() {
-      $("thesis").value = generatedThesis();
-    }
-
-    function routeFor(score) {
-      const rule = currentRule();
-      if (score >= rule.block) return ["Blocked", "Block live routing"];
-      if (score >= rule.paper) return ["Paper", "Probe only"];
-      if (score >= rule.guarded) return ["Guarded", "Guarded micro-test"];
-      return ["Allowed", "Sandbox allow"];
-    }
-
-    function updateMarketStatus(text, mode = "") {
-      $("marketStatus").textContent = text;
-      $("marketDot").className = `live-dot ${mode}`;
-    }
-
-    function paintTimeline(score) {
-      const bars = [32, 54, 45, 68, 39, 73, 81, 57, 49, 64, 36, 52].map((v, i) => clamp(v + (score - 55) * (i % 3 === 0 ? .32 : -.12), 18, 94));
-      $("timeline").innerHTML = bars.map((v) => `<span class="tick" style="height:${v}%"></span>`).join("");
-    }
-
-    function setProbing(active, copy = "Replaying thesis against drift, depth, confidence, and leverage pressure.") {
-      const replayCard = $("replayCard");
-      const button = $("runProbe");
-      if (active) {
-        replayCard.classList.add("probing");
-        $("probeOverlay").setAttribute("aria-hidden", "false");
-        $("probeCopy").textContent = copy;
-        button.disabled = true;
-        button.textContent = "Probing signal...";
-        $("verdict").textContent = "Probing signal";
-        $("readout").textContent = copy;
-      } else {
-        replayCard.classList.remove("probing");
-        $("probeOverlay").setAttribute("aria-hidden", "true");
-        button.disabled = false;
-        button.textContent = "Run pre-mortem";
-      }
-    }
-
-    function normalizeTicker(row) {
-      const rawChange = Number(row.changeUtc24h ?? row.change24h ?? 0);
-      return {
-        price: Number(row.lastPr || row.close || row.last || 0),
-        drift: Math.abs(rawChange) <= 1 ? rawChange * 100 : rawChange,
-        quoteVolume: Number(row.quoteVolume || row.usdtVolume || row.baseVolume || 0)
-      };
-    }
-
-    function depthQualityFromOrderbook(book) {
-      const asks = book.asks || [];
-      const bids = book.bids || [];
-      if (!asks.length || !bids.length) return 45;
-      const ask0 = Number(asks[0][0]);
-      const bid0 = Number(bids[0][0]);
-      const mid = (ask0 + bid0) / 2;
-      const spreadBps = mid ? ((ask0 - bid0) / mid) * 10000 : 25;
-      const notional = [...asks.slice(0, 20), ...bids.slice(0, 20)]
-        .reduce((sum, [price, size]) => sum + Number(price) * Number(size), 0);
-      const notionalScore = clamp(Math.log10(Math.max(1, notional)) * 13, 10, 85);
-      const spreadPenalty = clamp(spreadBps * 1.6, 0, 42);
-      return Math.round(clamp(notionalScore + 22 - spreadPenalty, 5, 100));
-    }
-
-    async function refreshBitgetData() {
-      const symbol = $("market").value;
-      clearTimeout(state.probeTimer);
-      setProbing(true, `Pulling public Bitget ticker and order book for ${symbol}.`);
-      updateMarketStatus(`Fetching Bitget public data for ${symbol}...`);
-      try {
-        const [tickerRes, bookRes] = await Promise.all([
-          fetch(`https://api.bitget.com/api/v2/spot/market/tickers?symbol=${encodeURIComponent(symbol)}`, { cache: "no-store" }),
-          fetch(`https://api.bitget.com/api/v2/spot/market/orderbook?symbol=${encodeURIComponent(symbol)}&type=step0&limit=100`, { cache: "no-store" })
-        ]);
-        if (!tickerRes.ok || !bookRes.ok) throw new Error("Bitget public endpoint unavailable");
-        const tickerJson = await tickerRes.json();
-        const bookJson = await bookRes.json();
-        const ticker = normalizeTicker((tickerJson.data || [])[0] || {});
-        if (!ticker.price) throw new Error("Ticker response missing price");
-        $("drift").value = clamp(ticker.drift, -9, 9).toFixed(1);
-        $("depth").value = depthQualityFromOrderbook(bookJson.data || {});
-        state.marketSource = "bitget";
-        updateMarketStatus(`${symbol} live from Bitget: ${ticker.drift.toFixed(2)}% 24h drift, depth ${$("depth").value}.`, "ok");
-      } catch (error) {
-        state.marketSource = "manual";
-        updateMarketStatus("Bitget public data could not be loaded in this browser. Manual controls remain active.", "warn");
-      }
-      completeAutopsy({ record: false });
-      setProbing(false);
-    }
-
-    function completeAutopsy({ record = false } = {}) {
-      updateGeneratedThesis();
-      const confidence = Number($("confidence").value);
-      const leverage = Number($("leverage").value);
-      const drift = Number($("drift").value);
-      const depth = Number($("depth").value);
-      const rule = currentRule();
-      const contradiction = Math.abs(drift) * 4.2 + Math.max(0, confidence - 58) * .45 + leverage * 1.72 + Math.max(0, 58 - depth) * .48 + rule.offset;
-      const score = clamp(Math.round(24 + contradiction), 8, 96);
-      const [route, verdict] = routeFor(score);
-      const slippage = clamp(Math.round(80 - depth + leverage * 1.8), 5, 96);
-      const conflict = clamp(Math.round(Math.abs(drift) * 8 + Math.max(0, confidence - 50) * .55), 8, 96);
-      const pressure = clamp(Math.round(leverage * 3.1 + confidence * .34), 8, 96);
-      const maxLeverage = Math.max(1, Math.floor(leverage * (route === "Blocked" ? .25 : route === "Paper" ? .5 : route === "Guarded" ? .72 : 1)));
-      const liveAllowed = route === "Allowed" || route === "Guarded";
-
-      $("score").textContent = score;
-      $("dial").style.setProperty("--score", score);
-      $("verdict").textContent = verdict;
-      $("readout").textContent = score >= 72
-        ? "The signal is carrying too much execution risk for live routing. Require fresh confirmation or lower the capital path."
-        : score >= 55
-          ? "The agent has enough evidence to observe, but confidence and leverage are ahead of market confirmation."
-          : "The signal can move forward with tight invalidation and a small route budget.";
-
-      $("confidenceOut").textContent = confidence + "%";
-      $("leverageOut").textContent = leverage + "x";
-      $("driftOut").textContent = (drift > 0 ? "+" : "") + drift.toFixed(1) + "%";
-      $("depthOut").textContent = depth;
-
-      $("heroVerdict").textContent = verdict;
-      $("heroDecision").textContent = score >= 72 ? "Block live routing. Require a new thesis with lower pressure." : score >= 55 ? "Hold live routing. Force paper execution until fragility cools below 45." : "Allow guarded route with a short re-check clock.";
-      [["heroM1", conflict], ["heroM2", slippage], ["heroM3", pressure]].forEach(([id, value]) => $(id).style.width = value + "%");
-      $("heroV1").textContent = conflict;
-      $("heroV2").textContent = slippage;
-      $("heroV3").textContent = pressure;
-
-      $("findings").innerHTML = [
-        ["Contradiction", `${conflict}/100 from drift and confidence mismatch.`],
-        ["Execution pressure", `${pressure}/100 from leverage and capital intent.`],
-        ["Depth strain", `${slippage}/100 estimated slippage exposure.`],
-        ["Route", `${route}; strategy threshold ${rule.paper}/${rule.block}; re-check in ${rule.recheck}.`]
-      ].map(([title, text]) => `<div class="finding"><b>${title}</b>${text}</div>`).join("");
-
-      state.lastPolicy = {
-        app: "Signal Autopsy",
-        generatedAt: new Date().toISOString(),
-        market: $("market").value,
-        strategy: $("strategy").value,
-        marketSource: state.marketSource,
-        inputs: { confidence, requestedLeverage: leverage, drift24hPercent: drift, depthQuality: depth },
-        strategyThresholds: { guarded: rule.guarded, paper: rule.paper, block: rule.block },
-        diagnostics: { fragilityScore: score, contradiction: conflict, executionPressure: pressure, depthStrain: slippage },
-        decision: { route, verdict, liveRouteAllowed: liveAllowed, maxLeverage, recheckAfter: rule.recheck },
-        enforcement: {
-          mode: route === "Blocked" ? "block" : route === "Paper" ? "paper-only" : route === "Guarded" ? "guarded-route" : "sandbox-route",
-          cancelIf: rule.cancel
-        },
-        thesis: $("thesis").value.trim()
-      };
-
-      $("playbookText").textContent = [
-        "SIGNAL AUTOPSY GUARDRAIL",
-        `market = ${$("market").value}`,
-        `strategy = ${$("strategy").value}`,
-        `market_source = ${state.marketSource}`,
-        `fragility_score = ${score}`,
-        `strategy_thresholds = guarded:${rule.guarded}, paper:${rule.paper}, block:${rule.block}`,
-        `route = ${route}`,
-        "",
-        "requirements:",
-        `- max_leverage = ${maxLeverage}x`,
-        `- live_route_allowed = ${liveAllowed}`,
-        `- recheck_after = ${rule.recheck}`,
-        `- cancel_if = ${rule.cancel}`,
-        "",
-        `thesis = ${$("thesis").value.trim()}`
-      ].join("\n");
-
-      if (record) {
-        state.rows.unshift({
-          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          signal: `${$("market").value} ${$("strategy").value.toLowerCase()}`,
-          route,
-          score
-        });
-        state.rows = state.rows.slice(0, 5);
-        renderLedger();
-      }
-      paintTimeline(score);
-    }
-
-    function runAutopsy(event) {
-      if (event) event.preventDefault();
-      clearTimeout(state.probeTimer);
-      setProbing(true);
-      paintTimeline(82);
-      state.probeTimer = setTimeout(() => {
-        completeAutopsy({ record: true });
-        setProbing(false);
-      }, 760);
-    }
-
-    function scheduleProbe() {
-      clearTimeout(state.probeTimer);
-      updateGeneratedThesis();
-      setProbing(true, "Sampling the changed inputs and rebuilding the failure map.");
-      paintTimeline(76);
-      state.probeTimer = setTimeout(() => {
-        completeAutopsy({ record: false });
-        setProbing(false);
-      }, 520);
-    }
-
-    function renderLedger() {
-      const classes = { Allowed: "green", Guarded: "amber", Paper: "amber", Blocked: "red" };
-      $("ledgerRows").innerHTML = `<div class="row"><span>Time</span><span>Signal</span><span>Route</span><span>Score</span></div>` +
-        state.rows.map((row) => `<div class="row"><span class="mono">${row.time}</span><span>${row.signal}</span><span><span class="badge ${classes[row.route] || ""}">${row.route}</span></span><span class="mono">${row.score}/100</span></div>`).join("");
-    }
-
-    async function copyGuardrail() {
-      try {
-        await navigator.clipboard.writeText($("playbookText").textContent);
-        $("toast").textContent = "Guardrail copied";
-      } catch {
-        $("toast").textContent = "Copy unavailable";
-      }
-      $("toast").classList.add("show");
-      setTimeout(() => $("toast").classList.remove("show"), 1600);
-    }
-
-    function exportPolicyJson() {
-      if (!state.lastPolicy) completeAutopsy({ record: false });
-      const blob = new Blob([JSON.stringify(state.lastPolicy, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `signal-autopsy-${state.lastPolicy.market.toLowerCase()}-${Date.now()}.json`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(url);
-      $("toast").textContent = "Policy JSON exported";
-      $("toast").classList.add("show");
-      setTimeout(() => $("toast").classList.remove("show"), 1600);
-    }
-
-    function simulateRouteGate() {
-      if (!state.lastPolicy) completeAutopsy({ record: false });
-      const policy = state.lastPolicy;
-      const copy = {
-        block: `Live order blocked. The agent must re-check in ${policy.decision.recheckAfter} and satisfy: ${policy.enforcement.cancelIf}.`,
-        "paper-only": `Live route denied. Signal is redirected to paper execution with max leverage ${policy.decision.maxLeverage}x.`,
-        "guarded-route": `Guarded route allowed. Live execution is capped at ${policy.decision.maxLeverage}x with cancel condition: ${policy.enforcement.cancelIf}.`,
-        "sandbox-route": `Sandbox route allowed. Policy remains attached for audit and re-check in ${policy.decision.recheckAfter}.`
-      };
-      $("executionPanel").innerHTML = `<strong>${policy.decision.verdict}</strong>${copy[policy.enforcement.mode]}`;
-      $("toast").textContent = "Route gate simulated";
-      $("toast").classList.add("show");
-      setTimeout(() => $("toast").classList.remove("show"), 1600);
-    }
-
-    $("autopsyForm").addEventListener("submit", runAutopsy);
-    ["market", "strategy", "confidence", "leverage", "drift", "depth"].forEach((id) => {
-      $(id).addEventListener("input", scheduleProbe);
-    });
-    $("copyPlaybook").addEventListener("click", copyGuardrail);
-    $("exportPolicy").addEventListener("click", exportPolicyJson);
-    $("enforceRoute").addEventListener("click", simulateRouteGate);
-    $("refreshMarket").addEventListener("click", refreshBitgetData);
-
-    renderLedger();
-    completeAutopsy({ record: false });
-  </script>
+  <script src="app.js" defer></script>
 </body>
 </html>

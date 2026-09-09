@@ -1,0 +1,21 @@
+{
+  "name": "signal-autopsy",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "benchmark": "node --test tests/benchmark.test.js",
+    "benchmark:freeze": "node scripts/freeze-benchmark.js",
+    "verify": "node --check app.js && npm test"
+  },
+  "dependencies": {
+    "@bitget-ai/bitget-agent-sdk": "^3.3.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  }
+}

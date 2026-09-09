@@ -1,157 +1,152 @@
 # Signal Autopsy
 
-Pre-trade failure intelligence for AI trading agents.
+Deterministic pre-trade safety for autonomous agents trading Bitget Reality tokenized US equities.
 
 ![Signal Autopsy logo](./logo.svg)
 
-Signal Autopsy is a static product prototype that turns an AI trading agent's proposed trade into a replayable pre-mortem. Instead of asking only whether a signal might win, it asks how the signal could fail before live routing is allowed.
+Signal Autopsy sits between an AI trading agent and the exchange route. It does not try to produce a better buy or sell signal. It asks whether the proposed order is safe to execute now, under the current session, liquidity, event, volatility, size, and confidence conditions.
 
 Live site: https://signal-autopsy.vercel.app
 
-## What It Does
-
-Signal Autopsy helps operators inspect a trading-agent decision before capital, leverage, or live execution is approved. The product turns a proposed trade setup into:
-
-- a dynamic agent thesis
-- a fragility score
-- a route decision
-- a visible probing/loading sequence
-- failure findings
-- a compiled guardrail policy
-- an audit ledger entry
-
-The current build is browser-only and does not place trades. It is designed as a product and interaction prototype for an agent-risk layer that could sit between an AI trading strategy and an exchange execution system.
-
 ## Why It Exists
 
-Most AI trading demos focus on signal generation: buy, sell, hold, predict, repeat.
+An rToken agent can operate around the clock even when the underlying US equity market is closed. Continuous access does not guarantee continuous liquidity, fresh reference pricing, or low event risk. A persuasive language-model thesis is also not an execution policy.
 
-Signal Autopsy focuses on the layer before execution:
+Signal Autopsy separates those responsibilities:
 
-- Is the agent too confident for the current market state?
-- Is requested leverage too high for the depth profile?
-- Is the trade thesis contradicted by drift or liquidity?
-- Should the route be live, guarded, paper-only, or blocked?
-- Can the decision be replayed later as an audit event?
+- Bitget Agent Hub and UTA v3 provide Reality market evidence.
+- Qwen challenges the thesis and exposes missing assumptions.
+- A deterministic engine computes the risk score and route.
+- A server-side gate enforces the signed result.
+- Failure Memory later grades whether the intervention helped.
 
-The goal is to make agent risk inspectable before it becomes performance.
+Qwen never controls the score, maximum notional, expiry, or execution authorization.
 
-## Core Workflow
+## Product Flow
 
-1. Select a market and agent strategy.
-2. Adjust confidence, leverage, 24h drift, and depth quality.
-3. Signal Autopsy generates a thesis that changes with those inputs.
-4. Run a pre-mortem to trigger the probing state.
-5. The app calculates fragility and returns a route decision.
-6. The guardrail compiler creates an execution policy.
-7. Intentional pre-mortem runs are written to the ledger.
+1. An agent proposes a Reality instrument, side, strategy, confidence, and order notional.
+2. The app loads the rToken ticker through the official Agent Hub market intent and daily candles through UTA v3.
+3. Qwen returns an advisory countercase, hidden assumptions, and evidence requests.
+4. The server calculates six deterministic risk components.
+5. The route becomes ALLOW, CLAMP, PAPER_ONLY, or BLOCK.
+6. The server signs a receipt containing the market snapshot, intent, score, route, cap, and expiry.
+7. The execution gate verifies signature, expiry, symbol, side, route, and notional.
+8. The signed receipt is retained in the browser ledger.
+9. Failure Memory attaches a later Reality price and classifies the intervention.
 
-Slider previews update the analysis but do not write audit rows. The ledger only records deliberate submitted pre-mortems.
+## Deterministic Risk Model
 
-## Route Decisions
+The score is a weighted sum on a 0-100 scale:
 
-Signal Autopsy maps the fragility score into four execution routes:
+| Component | Weight | Core question |
+| --- | ---: | --- |
+| Session | 14% | Is the underlying US market in regular, extended, overnight, or weekend phase? |
+| Liquidity | 20% | Can current Reality depth support the route? |
+| Event | 16% | Could scheduled or unscheduled company information dominate the thesis? |
+| Volatility | 18% | Is recent realized movement elevated? |
+| Size | 18% | How large is the request relative to observed depth? |
+| Overconfidence | 14% | Is agent confidence ahead of evidence quality? |
 
-| Score | Route | Meaning |
-| --- | --- | --- |
-| 0-37 | Sandbox allow | Low-fragility setup suitable for controlled sandbox routing. |
-| 38-54 | Guarded micro-test | The signal can move forward with tight invalidation and small sizing. |
-| 55-71 | Paper / probe only | The signal needs observation before live execution. |
-| 72+ | Block live routing | The setup is too fragile for live routing. |
+Route thresholds:
 
-## Fragility Model
+| Score | Route | Enforcement |
+| ---: | --- | --- |
+| 0-37.9 | ALLOW | Requested notional may pass for a short window |
+| 38-55.9 | CLAMP | Notional is capped at 35% of the request |
+| 56-71.9 | PAPER_ONLY | Live execution denied |
+| 72-100 | BLOCK | Execution denied |
 
-The prototype uses a synthetic scoring model:
+These thresholds are a transparent safety policy, not financial advice.
 
-```text
-fragility = 24
-  + abs(24h_drift) * 4.2
-  + max(0, confidence - 58) * 0.45
-  + leverage * 1.72
-  + max(0, 58 - depth_quality) * 0.48
-```
+## Signed Route Gate
 
-This is not financial advice or a production risk model. It is an interaction model that shows how agent confidence, leverage, liquidity, and market drift can be converted into pre-execution guardrails.
+The browser is treated as untrusted. The server recomputes the decision and signs the receipt with HMAC-SHA256. The final gate then independently verifies:
 
-## Key Features
+- receipt signature;
+- authorization expiry;
+- Reality symbol;
+- order side;
+- deterministic route;
+- requested notional against the signed cap.
 
-- Dynamic thesis generation based on market, strategy, confidence, leverage, drift, and depth.
-- Live Bitget public ticker and order book refresh with manual fallback.
-- Probing/loading state that makes the pre-mortem feel like an inspection process.
-- Guardrail compiler with max leverage, live-route permission, re-check timing, and cancel conditions.
-- Strategy-specific thresholds for route decisions.
-- JSON export for guardrail policies.
-- Front-end route-gate simulation for paper, guarded, sandbox, and blocked outcomes.
-- Audit ledger that records intentional pre-mortem submissions.
-- Product documentation page at `docs.html`.
-- Footer links to the official Bitget API docs and the build documentation.
-- Static deployment with no backend required.
+Changing any signed field invalidates the receipt. Real order submission is disarmed by default. The normal result is a SIMULATED order ID after all real gate checks pass.
 
-## Project Structure
+## Reality and Agent Hub
 
-```text
-.
-├── index.html                  # Main product page
-├── docs.html                   # Build documentation
-├── logo.svg                    # App logo
-├── favicon.svg                 # Browser favicon
-├── outputs/
-│   ├── signal-autopsy.html     # Local Codex output copy
-│   └── docs.html               # Local Codex output docs copy
-├── vercel.json                 # Vercel static deployment config
-├── README.md
-└── .gitignore
-```
+The market adapter uses the official @bitget-ai/bitget-agent-sdk package and its read-only market intent for UTA v3 ticker data. UTA v3 candles supply volatility evidence. Authenticated Reality order-book and order routes support the user's RSA key through Bitget's documented RSA signature flow.
 
-## Run Locally
+The official Agent Hub SDK currently supports HMAC for authenticated calls. Public Agent Hub reads and RSA-authenticated Reality routes are therefore deliberately separated.
 
-Open `index.html` directly in a browser.
+## Qwen Examiner
 
+When BITGET_QWEN_API_KEY is configured, the server calls qwen3.8-max through the S2 hackathon proxy's Responses endpoint. Standard DASHSCOPE_API_KEY configuration is also supported. The model is asked for strict JSON containing:
 
-## GitHub
+- strongestCountercase;
+- hiddenAssumptions;
+- evidenceRequests;
+- confidenceChallenge.
 
-Repository:
+Without a key, the examiner visibly reports DEMO and returns a deterministic fallback. In both cases it is advisory only.
 
-```text
-https://github.com/0xNexuz/signal-autopsy
-```
+## Failure Memory
 
-Main branch:
+Receipts are persisted in localStorage because this build intentionally has no database. A later evaluation:
 
-```text
-main
-```
+1. verifies the original receipt;
+2. obtains a later price;
+3. calculates the side-adjusted move;
+4. labels the intervention CORRECT_INTERVENTION, FALSE_POSITIVE, CORRECT_PASS, MISSED_RISK, or INCONCLUSIVE;
+5. signs the evaluation.
 
-## Bitget Integration Path
+Browser storage is persistent on that browser, but users can delete it. A shared server ledger remains a future database-backed step.
 
-The current version uses Bitget public spot market data where browser access is available:
+## Historical Benchmark
 
-- market tickers
-- order book depth
+The benchmark uses a fixed 2026-09-01 cutoff and a fixed cohort of rAAPL, rNVDA, rTSLA, rMSFT, rSPY, and rQQQ daily Reality candles. Every fifth candle after a 20-candle lookback becomes a test intent. Direction follows trailing three-candle momentum, while risk context follows a documented deterministic matrix.
 
-Current endpoints:
+The comparison reports maximum drawdown for:
 
-```text
-GET /api/v2/spot/market/tickers
-GET /api/v2/spot/market/orderbook
-```
+- agent alone at full exposure;
+- agent plus Signal Autopsy, where ALLOW receives 100%, CLAMP 35%, and PAPER_ONLY/BLOCK 0%.
 
-Future authenticated integrations could add funding data, account risk settings, paper trading, or live route enforcement.
+Market candles are REAL when Bitget responds. Agent intents and policy application are SIMULATED. The result is a risk-intervention benchmark, not a trading-profit claim.
 
-Official Bitget API docs:
+## Status Labels
 
-```text
-https://www.bitget.com/api-doc/common/intro
-```
+- REAL means the displayed path completed against a real service or real enforcement code.
+- DEMO means a configured service was replaced by an explicit fallback.
+- SIMULATED means real logic ran without submitting an exchange order.
+- BLOCKED means a required service, credential, or safety condition was unavailable.
 
-## Next Steps
+Detailed claim evidence lives in docs/build-harness.
 
-- Extend live market data inputs beyond ticker and order book depth.
-- Add authenticated paper-trading mode.
-- Store pre-mortem ledger events in a database.
-- Connect authenticated execution workflows.
-- Add production-grade strategy calibration.
+## Local Setup
 
-## Disclaimer
+Requirements: Node.js 20 or newer.
 
-Signal Autopsy is a product prototype. It does not execute trades and should not be treated as financial advice, investment advice, or a production trading-risk system.
+~~~powershell
+npm install
+npx vercel dev
+~~~
+
+Copy .env.example to .env.local and fill only the services you need. See API_KEYS_SETUP.md for RSA, Qwen, receipt signing, and live-mode controls.
+
+## Verification
+
+~~~powershell
+npm test
+~~~
+
+The automated suite covers deterministic allow/block decisions, receipt mutation, expired receipts, wrong symbol and side, oversized orders, Failure Memory classification, and benchmark repeatability.
+
+## Official Documentation
+
+- Agent Hub: https://github.com/Bitget-AI/agent_hub
+- UTA v3 quick start: https://www.bitget.com/docs/uta/quick-start
+- Reality trading: https://www.bitget.com/docs/catalog/reality/trading
+- Reality trading guide: https://www.bitget.com/api-doc/uta/reality/reality-trading-guide
+- Qwen Model Studio: https://www.alibabacloud.com/help/en/model-studio/first-api-call-to-qwen
+
+## Safety
+
+Keep BITGET_EXECUTION_MODE=simulated during demonstrations. Do not expose API keys, RSA private material, passphrases, Qwen keys, or the receipt signing secret. Live trading can lose money and must not be armed without an explicit operating policy, fixed server egress, monitored limits, and independent testing.

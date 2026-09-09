@@ -2,190 +2,62 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Signal Autopsy Docs</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Signal Autopsy Documentation</title>
+  <link rel="icon" href="favicon.svg">
   <style>
-    :root {
-      color-scheme: dark;
-      --ink: #090d12;
-      --panel: #151f29;
-      --line: #2c3a46;
-      --text: #eef3f7;
-      --muted: #94a3ad;
-      --soft: #cbd5dc;
-      --amber: #e9a32a;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      background:
-        linear-gradient(rgba(255,255,255,.026) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.026) 1px, transparent 1px),
-        radial-gradient(circle at 12% 8%, rgba(233, 163, 42, .18), transparent 24rem),
-        var(--ink);
-      background-size: 56px 56px, 56px 56px, auto, auto;
-      color: var(--text);
-    }
-
-    a { color: inherit; }
-
-    .shell {
-      width: min(980px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 34px 0 72px;
-    }
-
-    .nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 72px;
-      color: var(--muted);
-    }
-
-    .nav a {
-      min-height: 40px;
-      display: inline-flex;
-      align-items: center;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 0 12px;
-      text-decoration: none;
-    }
-
-    h1 {
-      margin: 0 0 18px;
-      max-width: 800px;
-      font-size: clamp(48px, 8vw, 104px);
-      line-height: .88;
-      letter-spacing: -.065em;
-    }
-
-    .lead {
-      max-width: 690px;
-      color: var(--soft);
-      font-size: 21px;
-      line-height: 1.45;
-      margin: 0 0 46px;
-    }
-
-    section {
-      border-top: 1px solid rgba(255,255,255,.1);
-      padding: 34px 0;
-    }
-
-    h2 {
-      margin: 0 0 14px;
-      font-size: clamp(27px, 4vw, 44px);
-      line-height: 1;
-      letter-spacing: -.045em;
-    }
-
-    p, li {
-      color: var(--soft);
-      line-height: 1.65;
-    }
-
-    code, pre {
-      font-family: "SFMono-Regular", Consolas, ui-monospace, monospace;
-    }
-
-    pre {
-      white-space: pre-wrap;
-      overflow: auto;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: rgba(21,31,41,.86);
-      padding: 16px;
-      color: #dce7ee;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
-
-    .card {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: rgba(21,31,41,.76);
-      padding: 16px;
-    }
-
-    .card strong {
-      color: var(--text);
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    @media (max-width: 760px) {
-      .grid { grid-template-columns: 1fr; }
-      .nav { align-items: flex-start; }
-    }
+    :root{color-scheme:dark;--bg:#0c0d0f;--panel:#14161a;--line:#2b2e34;--text:#f2efe8;--soft:#c6c1b7;--muted:#88857e;--amber:#e9a32a}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.68 Arial,sans-serif}a{color:var(--amber)}.shell{width:min(920px,calc(100% - 34px));margin:auto}header{display:flex;align-items:center;justify-content:space-between;padding:24px 0;border-bottom:1px solid var(--line)}header a{color:var(--text);text-decoration:none}header img{width:28px;vertical-align:middle;margin-right:9px}main{padding:54px 0 80px}h1{font-size:clamp(36px,6vw,64px);line-height:1;margin:0 0 18px}h2{font-size:24px;margin:48px 0 12px}h3{font-size:17px;margin:28px 0 8px}p,li{color:var(--soft)}.lead{font-size:19px;max-width:760px}.note{border-left:3px solid var(--amber);padding:13px 16px;background:var(--panel);color:var(--soft)}table{width:100%;border-collapse:collapse;margin:16px 0}th,td{text-align:left;border-bottom:1px solid var(--line);padding:11px 8px;vertical-align:top}th{color:var(--muted);font-size:12px;text-transform:uppercase}code{background:var(--panel);border:1px solid var(--line);padding:2px 5px;border-radius:3px}footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted)}
   </style>
 </head>
 <body>
+  <header class="shell"><a href="index.html"><img src="logo.svg" alt="">Signal Autopsy</a><a href="index.html#replay">Open Replay Lab</a></header>
   <main class="shell">
-    <nav class="nav" aria-label="Documentation navigation">
-      <strong>Signal Autopsy Docs</strong>
-      <a href="index.html">Back to product</a>
-    </nav>
+    <p class="note">Execution is SIMULATED by default. The route gate is real server-side enforcement; exchange submission remains explicitly disarmed.</p>
+    <h1>Product documentation</h1>
+    <p class="lead">Signal Autopsy is the pre-execution safety harness for autonomous agents operating on Bitget Reality tokenized US equities.</p>
 
-    <h1>How Signal Autopsy works.</h1>
-    <p class="lead">Signal Autopsy is a browser-based product prototype for pre-trade failure intelligence. It does not place orders. It turns an AI trading agent's thesis into a visible pre-mortem, guardrail, and audit event.</p>
+    <h2>What happens to an intent</h2>
+    <ol>
+      <li>Reality ticker and candle evidence arrives through Agent Hub and UTA v3.</li>
+      <li>Qwen adversarially examines the thesis but receives no execution authority.</li>
+      <li>A deterministic engine scores session, liquidity, event, volatility, size, and overconfidence risk.</li>
+      <li>The server emits a signed receipt with a route, notional cap, and expiry.</li>
+      <li>The route gate verifies the receipt and fails closed on any mismatch.</li>
+      <li>Failure Memory later evaluates whether the intervention was useful.</li>
+    </ol>
 
-    <section>
-      <h2>1. Input Model</h2>
-      <p>The replay lab asks for market, strategy, confidence, leverage, 24h drift, and depth quality. Those inputs generate the live thesis and the failure map. The thesis changes as the controls change, so the agent story always matches the selected conditions.</p>
-    </section>
+    <h2>Routes</h2>
+    <table><thead><tr><th>Score</th><th>Route</th><th>Result</th></tr></thead><tbody>
+      <tr><td>0-37.9</td><td>ALLOW</td><td>Short-lived authorization at requested notional</td></tr>
+      <tr><td>38-55.9</td><td>CLAMP</td><td>Maximum 35% of requested notional</td></tr>
+      <tr><td>56-71.9</td><td>PAPER_ONLY</td><td>Exchange route denied</td></tr>
+      <tr><td>72-100</td><td>BLOCK</td><td>Execution denied</td></tr>
+    </tbody></table>
 
-    <section>
-      <h2>2. Fragility Score</h2>
-      <p>The score is a synthetic risk indicator for the prototype. It combines directional drift, confidence pressure, requested leverage, and weak depth. Higher scores mean the trade idea is more fragile before execution.</p>
-      <pre>fragility = 24
-  + abs(24h_drift) * 4.2
-  + max(0, confidence - 58) * 0.45
-  + leverage * 1.72
-  + max(0, 58 - depth_quality) * 0.48</pre>
-    </section>
+    <h2>Truth labels</h2>
+    <p><strong>REAL</strong> is used for completed service calls or enforced server logic. <strong>DEMO</strong> marks a visible fallback. <strong>SIMULATED</strong> means the real policy ran but no exchange order was submitted. <strong>BLOCKED</strong> means a dependency or safety requirement was unavailable.</p>
 
-    <section>
-      <h2>3. Route Decisions</h2>
-      <div class="grid">
-        <div class="card"><strong>0-37</strong>Sandbox allow.</div>
-        <div class="card"><strong>38-54</strong>Guarded micro-test.</div>
-        <div class="card"><strong>55-71</strong>Paper or probe only.</div>
-        <div class="card"><strong>72+</strong>Block live routing.</div>
-      </div>
-    </section>
+    <h2>Signed receipts</h2>
+    <p>The receipt binds the instrument, side, requested notional, market snapshot, six-component score, route, maximum notional, and expiry. Any alteration invalidates the signature. Receipts persist in the current browser because this build intentionally has no database.</p>
 
-    <section>
-      <h2>4. Guardrail Compiler</h2>
-      <p>The guardrail output converts the verdict into machine-readable execution constraints: max leverage, live route permission, re-check timing, cancellation triggers, and the current thesis. A real implementation would pass that policy into an agent runner, exchange connector, or approval workflow.</p>
-    </section>
+    <h2>Qwen boundary</h2>
+    <p>Qwen may surface a countercase, assumptions, and evidence requests. The deterministic engine alone controls execution authorization. Removing Qwen or changing its response does not bypass the route gate.</p>
 
-    <section>
-      <h2>5. Ledger</h2>
-      <p>The ledger records intentional pre-mortem runs only. Slider previews update the analysis but do not write audit rows. This keeps the ledger reserved for decisions that the operator actually submitted.</p>
-    </section>
+    <h2>Benchmark</h2>
+    <p>The fixed-as-of benchmark compares the same historical Reality candle intents at full exposure and under Signal Autopsy's route multipliers. Candle data is REAL when loaded from Bitget; the generated intents and intervention policy are SIMULATED. Results are not a profitability forecast.</p>
 
-    <section>
-      <h2>6. Bitget Integration</h2>
-      <p>The current build connects to Bitget public spot market endpoints for ticker and order book data when the browser allows the request. The app derives 24h drift from ticker data and depth quality from the order book. If public data is blocked or unavailable, manual controls remain active as a fallback.</p>
-      <pre>ticker:    /api/v2/spot/market/tickers
-orderbook: /api/v2/spot/market/orderbook</pre>
-    </section>
+    <h2>Configuration</h2>
+    <p>Local secrets belong in <code>.env.local</code>; deployment secrets belong in Vercel environment variables. See <a href="API_KEYS_SETUP.md">API key setup</a> and the repository README for all variables and safety controls.</p>
 
-    <section>
-      <h2>7. No Database Yet</h2>
-      <p>The audit ledger is currently in-memory only. Refreshing the browser resets it. A production version should persist pre-mortem events, exported policies, operator approvals, and route outcomes in a backend database.</p>
-    </section>
+    <h2>References</h2>
+    <ul>
+      <li><a href="https://github.com/Bitget-AI/agent_hub">Bitget Agent Hub</a></li>
+      <li><a href="https://www.bitget.com/docs/uta/quick-start">UTA v3 quick start</a></li>
+      <li><a href="https://www.bitget.com/docs/catalog/reality/trading">Reality trading API</a></li>
+      <li><a href="https://www.alibabacloud.com/help/en/model-studio/first-api-call-to-qwen">Qwen Model Studio</a></li>
+    </ul>
   </main>
+  <footer class="shell">Signal Autopsy. Deterministic pre-trade safety, not financial advice.</footer>
 </body>
 </html>

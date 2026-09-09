@@ -2,6 +2,7 @@
 work
 node_modules
 *.log
+outputs/s2-*.png
 .env
 .env.local
 .env.*.local
