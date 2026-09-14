@@ -1,14 +1,15 @@
 # Demo Plan
 
-1. Open Signal Autopsy and point out REAL, DEMO, and SIMULATED labels.
-2. Select rAAPLUSDT and load Reality data through Agent Hub and UTA v3.
-3. Increase order size and confidence while lowering evidence quality.
-4. Run the pre-mortem and show all six deterministic components.
-5. Read Qwen's strongest countercase, then state that it cannot authorize execution.
-6. Show the signed receipt ID, cap, and expiry.
-7. Enforce the route and show either a deterministic denial or a simulated order ID.
-8. Change the requested notional above the signed cap and show server denial.
-9. Evaluate the latest receipt in Failure Memory.
-10. Close on the fixed-as-of agent-alone versus agent-plus-Signal-Autopsy benchmark.
+1. Open Signal Autopsy and point out UTA v3 CHECK ON LOAD, REAL ROUTE GATE, and SIMULATED EXECUTION ONLY.
+2. Select rAAPLUSDT and wait for the probing overlay while the server requests Reality evidence.
+3. Change strategy, side, confidence, evidence quality, event risk, and size; show that the thesis updates.
+4. Explain that event risk and session are explicitly simulated inputs/models.
+5. Run the pre-mortem and show six deterministic components.
+6. Read Qwen's strongest countercase and state that Qwen cannot change authorization.
+7. Show the signed receipt ID, server-owned market evidence, cap, and expiry.
+8. Call the gate and show either a deterministic denial or simulated order ID.
+9. Alter symbol, side, or notional and show server denial.
+10. Evaluate the latest receipt; point out that the later price is server-fetched.
+11. Close on the frozen agent-alone versus agent-plus-Signal-Autopsy benchmark.
 
-Never imply that simulated execution is a real fill or that reduced historical drawdown predicts returns.
+Never describe simulated routing as a fill. If Bitget or Qwen is unavailable, show the BLOCKED or DEMO label and continue only with the deterministic behavior that remains valid.

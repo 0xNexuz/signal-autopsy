@@ -69,13 +69,13 @@ The browser is treated as untrusted. The server recomputes the decision and sign
 - deterministic route;
 - requested notional against the signed cap.
 
-Changing any signed field invalidates the receipt. Real order submission is disarmed by default. The normal result is a SIMULATED order ID after all real gate checks pass.
+Changing any signed field invalidates the receipt. The audited route API contains no exchange submission path. A passing request returns a SIMULATED order ID after all real gate checks pass. Live submission remains blocked until a durable store can atomically consume each receipt once.
 
 ## Reality and Agent Hub
 
-The market adapter uses the official @bitget-ai/bitget-agent-sdk package and its read-only market intent for UTA v3 ticker data. UTA v3 candles supply volatility evidence. Authenticated Reality order-book and order routes support the user's RSA key through Bitget's documented RSA signature flow.
+The market adapter uses the official @bitget-ai/bitget-agent-sdk package and its read-only market intent for Reality instrument checks and UTA v3 ticker data. UTA v3 candles supply volatility evidence. Authenticated Reality order-book reads support the user's RSA key through Bitget's documented RSA signature flow.
 
-The official Agent Hub SDK currently supports HMAC for authenticated calls. Public Agent Hub reads and RSA-authenticated Reality routes are therefore deliberately separated.
+The official Agent Hub SDK currently supports HMAC for authenticated calls. Public Agent Hub reads and RSA-authenticated Reality depth reads are therefore deliberately separated.
 
 ## Qwen Examiner
 
@@ -129,15 +129,16 @@ npm install
 npx vercel dev
 ~~~
 
-Copy .env.example to .env.local and fill only the services you need. See API_KEYS_SETUP.md for RSA, Qwen, receipt signing, and live-mode controls.
+Copy .env.example to .env.local and fill only the services you need. See API_KEYS_SETUP.md for RSA, Qwen, and receipt signing.
 
 ## Verification
 
 ~~~powershell
-npm test
+npm run verify
+npm run browser:verify
 ~~~
 
-The automated suite covers deterministic allow/block decisions, receipt mutation, expired receipts, wrong symbol and side, oversized orders, Failure Memory classification, and benchmark repeatability.
+The automated suite covers deterministic decisions, non-finite inputs, server-owned evidence, receipt mutation and expiry, identity and size mismatches, disarmed exchange submission, signing policy, Failure Memory classification, and benchmark repeatability.
 
 ## Official Documentation
 
@@ -149,4 +150,4 @@ The automated suite covers deterministic allow/block decisions, receipt mutation
 
 ## Safety
 
-Keep BITGET_EXECUTION_MODE=simulated during demonstrations. Do not expose API keys, RSA private material, passphrases, Qwen keys, or the receipt signing secret. Live trading can lose money and must not be armed without an explicit operating policy, fixed server egress, monitored limits, and independent testing.
+Do not expose API keys, RSA private material, passphrases, Qwen keys, or the receipt signing secret. This build does not submit exchange orders. Live trading must not be added without an atomic single-use receipt store, an explicit operating policy, fixed server egress, monitored limits, and independent testing.

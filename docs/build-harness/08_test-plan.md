@@ -1,29 +1,37 @@
 # Test Plan
 
-## Automated
+## Automated Result
 
-| Area | Case | Expected |
-| --- | --- | --- |
-| Risk engine | Low-risk intent | ALLOW and full requested cap |
-| Risk engine | Stressed intent | BLOCK and zero cap |
-| Receipt | Payload mutation | Signature invalid |
-| Gate | Matching signed request | Allowed |
-| Gate | Above signed cap | Denied |
-| Gate | BLOCK route | Denied |
-| Gate | Wrong symbol or side | Denied |
-| Gate | Expired receipt | Denied |
-| Failure Memory | Prevented adverse move | Correct intervention |
-| Benchmark | Repeated same fixture | Byte-equivalent result |
+Command: npm run verify
+Date: 2026-09-11
+Result: 20 passed, 0 failed
+Syntax coverage: 25 JavaScript files
 
-Latest local result: 9 tests passed, 0 failed on 2026-09-09.
+| Area | Cases |
+| --- | --- |
+| Risk engine | Low risk, stressed risk, NaN, Infinity, out-of-range confidence |
+| Session model | Explicit SIMULATED status and limitation |
+| Receipt | Valid signature and payload mutation |
+| Input policy | Symbol canonicalization, malformed symbol, non-finite input |
+| Evidence ownership | Server values override browser depth and volatility |
+| Gate | Match, cap, BLOCK, identity mismatch, expiry, mutation, unknown route, invalid cap, malformed symbol and side |
+| Execution boundary | Route API contains no exchange order call |
+| Verify endpoint | Valid signature plus expired receipt returns invalid |
+| Failure Memory | Prevented loss classification |
+| Signing | Demo label and weak configured-secret rejection |
+| Benchmark | Deterministic output and no greater exposure than agent-alone |
 
-## Deployment
+## Browser Result
 
-1. Load each Reality instrument and verify REAL ticker/candle labels.
-2. Run a pre-mortem and verify receipt with api/verify-receipt.
-3. Submit a permitted simulated order and capture simulated order ID.
-4. Alter symbol, side, cap, signature, and expiry; verify denial.
-5. Run benchmark twice and compare dataset hash and metrics.
-6. Configure Qwen and confirm REAL status while route output remains identical.
+Command: npm run browser:verify
+Result: passed locally at 1440x1000 and 390x844.
 
-Public production Reality data and the fixed benchmark were verified on 2026-09-09. Mainnet order testing is intentionally excluded until static egress, key policy, and explicit operator approval exist.
+Checks: loading overlay visible during probing, capability labels accurate, thesis changes with strategy selection, no page errors, and no horizontal overflow. Screenshots are outputs/audit-desktop.png and outputs/audit-mobile.png.
+
+## External Checks
+
+- npm audit --omit=dev: 0 vulnerabilities.
+- Qwen local configuration: DEMO fallback returned successfully.
+- Invalid numeric autopsy request: rejected with INVALID_AUTOPSY_INPUT.
+- Live Bitget request: BLOCKED by local DNS and must be rerun after preview deployment.
+- Real order submission: intentionally excluded.

@@ -1,13 +1,15 @@
 {
   "name": "signal-autopsy",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "type": "module",
   "scripts": {
     "test": "node --test",
     "benchmark": "node --test tests/benchmark.test.js",
     "benchmark:freeze": "node scripts/freeze-benchmark.js",
-    "verify": "node --check app.js && npm test"
+    "browser:verify": "node scripts/verify-browser.js",
+    "syntax": "node scripts/check-syntax.js",
+    "verify": "npm run syntax && npm test"
   },
   "dependencies": {
     "@bitget-ai/bitget-agent-sdk": "^3.3.0"

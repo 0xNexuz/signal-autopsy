@@ -33,7 +33,7 @@
     }).then(async function (response) {
       var data = await response.json();
       if (!response.ok) {
-        var error = new Error(data.error || (data.inspection && data.inspection.reason) || "Request failed");
+        var error = new Error(data.message || data.error || (data.inspection && data.inspection.reason) || "Request failed");
         error.data = data;
         throw error;
       }
@@ -204,7 +204,7 @@
       $("depth").value = clamp(data.market.depthQuality, 5, 100);
       $("depthNotional").value = Math.round(data.market.depthNotional);
       $("marketDot").className = "live-dot ok";
-      $("marketStatus").textContent = "REAL " + data.market.symbol + " " + data.market.price + " USDT; " + data.market.session.phase + "; liquidity " + data.market.sources.liquidity.status + ".";
+      $("marketStatus").textContent = "REAL " + data.market.symbol + " " + data.market.price + " USDT; session " + data.market.session.status + " (" + data.market.session.phase + "); liquidity " + data.market.sources.liquidity.status + ".";
       updateOutputs();
       previewDecision();
       return data.market;
@@ -222,13 +222,7 @@
 
   function autopsyInput(examiner) {
     return {
-      market: {
-        symbol: $("market").value,
-        observedAt: state.market.observedAt,
-        price: state.market.price,
-        session: state.market.session,
-        sources: state.market.sources
-      },
+      market: { symbol: $("market").value },
       intent: {
         side: $("side").value,
         notional: Number($("notional").value),
@@ -237,11 +231,7 @@
       thesis: $("thesis").value.trim(),
       examiner: examiner,
       risk: {
-        depthQuality: Number($("depth").value),
-        depthNotional: Number($("depthNotional").value),
-        orderNotional: Number($("notional").value),
         eventRisk: Number($("eventRisk").value),
-        volatilityRisk: state.market.volatilityRisk,
         confidence: Number($("confidence").value),
         evidenceQuality: Number($("evidence").value)
       }
@@ -253,17 +243,33 @@
     setProbing(true);
     try {
       await refreshMarket(true);
-      var examinerResult = await post("/api/examine-thesis", {
-        symbol: $("market").value,
-        thesis: $("thesis").value.trim(),
-        strategy: $("strategy").value,
-        confidence: Number($("confidence").value),
-        evidenceQuality: Number($("evidence").value),
-        session: state.market.session
-      });
+      var examinerResult;
+      try {
+        examinerResult = await post("/api/examine-thesis", {
+          symbol: $("market").value,
+          thesis: $("thesis").value.trim(),
+          strategy: $("strategy").value,
+          confidence: Number($("confidence").value),
+          evidenceQuality: Number($("evidence").value),
+          session: state.market.session
+        });
+      } catch (_) {
+        examinerResult = {
+          status: "BLOCKED",
+          provider: "Qwen request unavailable; deterministic fallback shown",
+          advisoryOnly: true,
+          examination: {
+            strongestCountercase: "Continuous token access does not guarantee underlying-equity liquidity outside the US regular session.",
+            hiddenAssumptions: ["Liquidity remains stable", "Event risk is complete"],
+            evidenceRequests: ["Show session, spread, and recent returns"],
+            confidenceChallenge: 50
+          }
+        };
+      }
       renderExaminer(examinerResult);
       var result = await post("/api/autopsy", autopsyInput(examinerResult));
       state.receipt = result.receipt;
+      state.market = result.receipt.payload.market;
       persistReceipt(result.receipt);
       renderDecision(result.receipt.payload.decision, false);
       renderLedger();
@@ -296,7 +302,7 @@
         receipt: state.receipt,
         order: { symbol: $("market").value, side: $("side").value, orderType: "market", notional: notional, size: notional / state.market.price }
       });
-      $("executionPanel").innerHTML = "<strong>" + result.execution + " execution</strong>" + escapeHtml(result.inspection.reason) + (result.simulatedOrderId ? " Order " + escapeHtml(result.simulatedOrderId) + "." : "");
+      $("executionPanel").innerHTML = "<strong>" + result.execution + " execution</strong>" + escapeHtml(result.inspection.reason) + (result.simulatedOrderId ? " Order " + escapeHtml(result.simulatedOrderId) + "." : "") + (result.note ? " " + escapeHtml(result.note) : "");
       showToast("Route gate: " + result.execution);
     } catch (error) {
       var data = error.data || {};
@@ -309,12 +315,9 @@
     var receipts = storedReceipts();
     if (!receipts.length) return showToast("No receipt to evaluate");
     var item = receipts[0];
-    $("memoryStatus").textContent = "Loading a later Reality price and verifying the original receipt...";
+    $("memoryStatus").textContent = "The server is loading a later Reality price and verifying the original receipt...";
     try {
-      var response = await fetch("/api/reality-market?symbol=" + encodeURIComponent(item.receipt.payload.market.symbol), { cache: "no-store" });
-      var data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Outcome price unavailable");
-      var result = await post("/api/evaluate-memory", { receipt: item.receipt, outcome: { price: data.market.price, observedAt: data.market.observedAt } });
+      var result = await post("/api/evaluate-memory", { receipt: item.receipt });
       receipts[0].evaluation = result;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(receipts));
       $("memoryStatus").textContent = result.evaluation.verdict + ": side-adjusted move " + result.evaluation.returnPct + "%. Evaluation signature " + result.signatureStatus + ".";

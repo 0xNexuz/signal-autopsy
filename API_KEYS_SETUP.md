@@ -4,7 +4,7 @@ Signal Autopsy now has server-side Vercel API routes. Secrets belong in .env.loc
 
 ## Bitget RSA
 
-Use the passphrase you created when generating the Bitget API key. Keep spot/UTA trade permission enabled. IP restrictions are configured in Bitget's API management screen; add the fixed egress IP of the server that will execute orders. Vercel does not provide a fixed outbound IP on every plan, so keep execution in simulated mode unless the deployment has approved static egress.
+Use the passphrase you created when generating the Bitget API key. IP restrictions are configured in Bitget's API management screen. Add only an approved server egress IP. Vercel does not provide a fixed outbound IP on every plan, so authenticated Reality depth may remain unavailable without approved static egress.
 
 ~~~env
 BITGET_API_KEY=your_key
@@ -13,17 +13,15 @@ BITGET_RSA_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nyour_key_material\n-----END
 BITGET_BASE_URL=https://api.bitget.com
 ~~~
 
-The official Agent Hub SDK currently signs authenticated calls with HMAC. Signal Autopsy therefore uses Agent Hub's read-only market intent for public UTA v3 ticker data and its own official-spec RSA signer for authenticated Reality depth and Reality orders.
+The official Agent Hub SDK currently signs authenticated calls with HMAC. Signal Autopsy therefore uses Agent Hub's read-only market intent for public UTA v3 instrument and ticker data and its own official-spec RSA signer for authenticated Reality depth.
 
 ## Safety Controls
 
 ~~~env
-RECEIPT_SIGNING_SECRET=use_a_long_random_server_only_secret
-BITGET_EXECUTION_MODE=simulated
-BITGET_LIVE_ACK=
+RECEIPT_SIGNING_SECRET=use_at_least_32_random_server_only_characters
 ~~~
 
-The route gate is machine-enforced in both modes. To deliberately arm real order submission, set BITGET_EXECUTION_MODE=live and BITGET_LIVE_ACK=I_UNDERSTAND_REAL_ORDERS. A valid REAL-signed, unexpired receipt must still pass symbol, side, route, and notional checks.
+The route gate verifies signature, expiry, symbol, side, route, and notional. A passing gate returns a SIMULATED order ID. There is no environment flag that enables exchange submission in this build.
 
 ## Qwen
 

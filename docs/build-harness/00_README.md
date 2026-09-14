@@ -1,32 +1,41 @@
 # Signal Autopsy Build Harness
 
-This directory is the evidence-backed readiness record for Signal Autopsy 2.0.
+Audit date: 2026-09-11
+Audit branch: codex/audit-hardening
+Readiness score: 84/100
+Decision: READY FOR REVIEW, NOT READY FOR LIVE ORDER SUBMISSION
 
-## Status Language
+## Scope
 
-- REAL - LOCAL: implemented and verified locally.
-- REAL - TESTNET: exercised against a non-production exchange environment.
-- REAL - MAINNET: exercised against production infrastructure.
-- SIMULATED: real code running with synthetic intent or execution.
-- MOCKED: controlled test double.
-- PARTIAL: implemented but not fully verified in the target environment.
-- BLOCKED: verification cannot proceed without an external dependency or credential.
-- PLANNED: not implemented.
+This harness audits Signal Autopsy as a safety boundary for 24/7 Bitget Reality/rToken agents. It covers market-evidence ownership, deterministic scoring, Qwen isolation, receipt integrity, route enforcement, Failure Memory, benchmark reproducibility, browser behavior, dependency exposure, and claim accuracy.
 
-## Current Readiness
+## Priority Ledger
 
-| Capability | Status | Evidence |
+| Priority | Finding | Resolution |
 | --- | --- | --- |
-| Six-component deterministic risk engine | REAL - LOCAL | tests/risk-engine.test.js |
-| Signed autopsy receipts | REAL - LOCAL | receipt mutation test |
-| Machine-enforceable route gate | REAL - LOCAL | tests/route-gate.test.js |
-| Browser persistence | REAL - LOCAL | localStorage receipt ledger |
-| Bitget Agent Hub market intent | REAL - MAINNET | production rAAPL response verified |
-| UTA v3 Reality candles | REAL - MAINNET | production candle and benchmark responses verified |
-| Authenticated Reality depth with RSA | PARTIAL | signer implemented; private credential call not exercised |
-| Qwen examiner | PARTIAL | live path implemented; DEMO fallback without key |
-| Failure Memory | REAL - LOCAL | deterministic outcome classifier and signed evaluation |
-| Historical comparison | REAL - MAINNET | 84 scenarios pinned with dataset hash |
-| Real order submission | BLOCKED | deliberately disarmed and not mainnet-tested |
+| P0 | Non-finite risk values could produce NaN and fall through to ALLOW | FIXED; finite and range validation now fails closed |
+| P0 | Browser could supply market, liquidity, volatility, and session evidence | FIXED; autopsy endpoint now fetches and signs server-owned Bitget evidence |
+| P0 | A valid receipt could be replayed into the live exchange path | FIXED FOR THIS BUILD; live submission removed until an atomic single-use store exists |
+| P0 | Failure Memory trusted a browser-supplied outcome price | FIXED; outcome market data is fetched by the server |
+| P0 | Qwen failure aborted the deterministic autopsy | FIXED; advisory fallback is labeled and deterministic authorization continues |
+| P1 | Session heuristic was labeled REAL | FIXED; session is explicitly SIMULATED with its limitations |
+| P1 | Receipt verification ignored expiry | FIXED; signature and expiry are reported separately and both are required |
+| P1 | JSON bodies were unbounded and malformed input leaked generic failures | FIXED; bounded object-only parsing and structured errors |
+| P1 | Weak configured receipt secrets were accepted | FIXED; configured secrets require at least 32 characters |
+| P1 | Production dependency audit was unverified | FIXED; npm audit reports 0 vulnerabilities using the system CA |
+| P2 | No atomic server-side receipt-consumption ledger | OPEN; live order submission remains disarmed |
+| P2 | Current commit has not been re-verified against Bitget mainnet | OPEN; local DNS blocked the live call |
+| P3 | Browser receipts are limited to localStorage | ACCEPTED FOR HACKATHON DEMO; not a shared durable ledger |
 
-See the remaining documents for architecture, claims, tests, threats, and demo boundaries.
+## Verification Snapshot
+
+- Repository-wide syntax: 25 JavaScript files passed.
+- Automated tests: 20 passed, 0 failed.
+- Browser verification: desktop and mobile passed; loading state, thesis reactivity, console errors, and horizontal overflow checked.
+- Production dependencies: 0 known vulnerabilities.
+- Live order call in route API: absent and regression-tested.
+- Current live Bitget verification: BLOCKED by local DNS; historical production evidence is retained separately.
+
+## Exact Next Action
+
+Deploy this branch to a preview, run the production endpoint workflow against rAAPLUSDT, and attach the new deployment URL and response evidence. Do not restore exchange submission until a database can atomically consume each receipt once.

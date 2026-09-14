@@ -1,15 +1,18 @@
 # Product Claim Map
 
-| Product claim | Implementation | Evidence | Status |
+| Product claim | Implementation | Evidence | Allowed wording |
 | --- | --- | --- | --- |
-| Safety harness for 24/7 rToken agents | index.html and app.js | production deployment and browser walkthrough | REAL - MAINNET |
-| Official Agent Hub and UTA v3 stack | lib/reality-market.js | production rAAPL ticker/candle response | REAL - MAINNET |
-| Qwen adversarial thesis examiner | api/examine-thesis.js | live key test pending | PARTIAL |
-| Deterministic six-factor risk | lib/risk-engine.js | automated tests pass | REAL - LOCAL |
-| Machine-enforceable route gate | lib/route-gate.js and api/route-gate.js | boundary tests pass | REAL - LOCAL |
-| Persistent signed receipts | api/autopsy.js and browser localStorage | mutation test passes | REAL - LOCAL |
-| Failure Memory | api/evaluate-memory.js | classifier test passes | REAL - LOCAL |
-| Frozen historical comparison | data/benchmark-report.json | 84 scenarios and pinned hash | REAL - MAINNET |
-| Real Reality order submission | api/route-gate.js | not mainnet tested | BLOCKED |
+| Safety harness for 24/7 rToken agents | app.js and server APIs | browser verification | Implemented and locally verified |
+| Official Agent Hub and UTA v3 stack | lib/reality-market.js | installed SDK contract; prior production evidence | Implemented; current mainnet recheck pending |
+| Qwen adversarial examiner | api/examine-thesis.js | local DEMO fallback | Advisory integration implemented; live status must match UI |
+| Deterministic six-factor risk | lib/risk-engine.js | automated tests | Locally verified |
+| Server-owned market evidence | api/autopsy.js and lib/autopsy-policy.js | ownership regression test | Locally verified |
+| Machine-enforceable route gate | lib/route-gate.js and api/route-gate.js | boundary tests | Locally verified for simulated routing |
+| Signed autopsy receipts | api/autopsy.js and lib/signing.js | mutation and secret-policy tests | Locally verified |
+| Failure Memory | api/evaluate-memory.js | classifier and code inspection | Implemented; live outcome fetch recheck pending |
+| Frozen historical comparison | data/benchmark-report.json | deterministic benchmark test | Frozen real dataset with simulated intents |
+| Real Reality order submission | none in route API | source regression test | Not supported in this build |
 
-Submission copy must preserve these qualifiers until the pending deployment evidence exists.
+## Submission Readiness
+
+The product is suitable for a review or demo after preview-deployment verification. It must not be described as live-trading ready. The precise unresolved engineering requirement is an atomic, durable, single-use receipt store followed by controlled order-route testing.

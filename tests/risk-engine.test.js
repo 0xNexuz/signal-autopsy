@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { computeRisk, evaluateIntervention, signReceipt, verifyReceipt } from "../lib/risk-engine.js";
+import { computeRisk, evaluateIntervention, sessionRisk, signReceipt, verifyReceipt } from "../lib/risk-engine.js";
 
 const lowRisk = {
   session: { score: 12 },
@@ -19,7 +19,6 @@ test("deterministic engine allows a low-risk intent", () => {
   assert.equal(result.authorization.executable, true);
   assert.equal(result.authorization.maxNotional, 100);
 });
-
 test("deterministic engine blocks a stressed intent", () => {
   const result = computeRisk({
     session: { score: 88 },
@@ -34,6 +33,18 @@ test("deterministic engine blocks a stressed intent", () => {
   assert.equal(result.route, "BLOCK");
   assert.equal(result.authorization.executable, false);
   assert.equal(result.authorization.maxNotional, 0);
+});
+
+test("deterministic engine fails closed on non-finite numeric input", () => {
+  assert.throws(() => computeRisk({ ...lowRisk, eventRisk: "not-a-number" }), /finite number/);
+  assert.throws(() => computeRisk({ ...lowRisk, depthNotional: Infinity }), /finite number/);
+  assert.throws(() => computeRisk({ ...lowRisk, confidence: -1 }), /between 0 and 100/);
+});
+
+test("session model is explicitly simulated", () => {
+  const result = sessionRisk("2026-09-10T15:00:00.000Z");
+  assert.equal(result.status, "SIMULATED");
+  assert.match(result.basis, /holidays and early closes/);
 });
 
 test("receipt verification detects mutation", () => {

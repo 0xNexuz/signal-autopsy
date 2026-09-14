@@ -1,18 +1,20 @@
 # Real Versus Simulated
 
-| Visible claim | Status | Meaning |
+| Visible capability | Label | Meaning |
 | --- | --- | --- |
-| UTA v3 ticker | REAL when response succeeds | Bitget data arrives through Agent Hub market intent |
-| Reality candles | REAL when response succeeds | Public UTA v3 historical market data |
-| Liquidity | REAL or SIMULATED | Authenticated Reality depth when available; volume proxy otherwise |
-| Risk score | REAL - LOCAL | Deterministic production code, not an LLM score |
-| Qwen examiner | REAL or DEMO | Real only when a valid Model Studio key succeeds |
-| Receipt signature | REAL or DEMO | Real only when a server signing secret is configured |
-| Route gate | REAL - LOCAL | Server-side enforcement executes on every request |
-| Order execution | SIMULATED by default | No exchange order is submitted |
-| Live Reality order | BLOCKED | Code exists but has not been mainnet exercised |
-| Failure Memory | REAL - LOCAL | Uses later market price and original signed receipt |
-| Benchmark market data | REAL when endpoint succeeds | Fixed-as-of Bitget Reality candles |
-| Benchmark intents/policy | SIMULATED | Fixed deterministic scenario matrix |
+| Reality instrument check | REAL after success | Server confirms Bitget marks the symbol as Reality |
+| Ticker and candles | REAL after success | Server received official Bitget data |
+| Liquidity | REAL or SIMULATED | Authenticated Reality book when available; otherwise a labeled volume proxy |
+| Session | SIMULATED | Weekday and New York time heuristic; no holiday or early-close calendar |
+| Event risk | SIMULATED | Agent-declared value, not a news feed |
+| Risk score and route | REAL | Deterministic production code using the displayed component policy |
+| Qwen examiner | REAL, DEMO, or BLOCKED | Advisory model, local fallback, or unavailable provider |
+| Receipt signature | REAL or DEMO | Environment secret or labeled built-in demo key |
+| Route gate | REAL | Server checks the signed contract |
+| Order execution | SIMULATED ONLY | No exchange order function is reachable from the route API |
+| Failure Memory outcome | REAL after success | Later Reality ticker fetched by the server |
+| Failure Memory storage | LOCAL | Evaluation is saved in browser localStorage |
+| Benchmark prices | REAL DATASET | Frozen Bitget Reality candle snapshot |
+| Benchmark agent decisions | SIMULATED | Fixed deterministic scenario matrix |
 
-No result in this build is financial advice or a profitability guarantee.
+No result is financial advice, a profitability guarantee, or evidence of a live fill.

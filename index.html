@@ -1025,7 +1025,7 @@
           <a class="btn btn-ghost" href="#guardrails">View guardrail compiler</a>
         </div>
         <p class="rail-note">Built for operators who need always-on rToken agents to fail closed across overnight liquidity, US sessions, event shocks, and model overconfidence.</p>
-        <div class="status-line"><span class="status-tag real">REAL UTA V3 DATA</span><span class="status-tag real">REAL ROUTE GATE</span><span class="status-tag simulated">SIMULATED EXECUTION DEFAULT</span></div>
+        <div class="status-line"><span class="status-tag simulated">UTA V3: CHECK ON LOAD</span><span class="status-tag real">REAL ROUTE GATE</span><span class="status-tag simulated">SIMULATED EXECUTION ONLY</span></div>
       </div>
 
       <div class="instrument" aria-label="Signal Autopsy instrument preview">
@@ -1095,7 +1095,7 @@
               <select id="side"><option value="buy">Buy</option><option value="sell">Sell</option></select>
             </div>
             <div>
-              <label for="eventRisk">Event risk</label>
+              <label for="eventRisk">Agent-declared event risk (SIMULATED)</label>
               <div class="range-row">
                 <input id="eventRisk" type="range" min="0" max="100" value="35">
                 <span class="mono" id="eventRiskOut">35</span>
