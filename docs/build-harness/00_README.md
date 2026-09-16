@@ -2,8 +2,8 @@
 
 Audit date: 2026-09-11
 Audit branch: codex/audit-hardening
-Readiness score: 84/100
-Decision: READY FOR REVIEW, NOT READY FOR LIVE ORDER SUBMISSION
+Readiness score: 88/100
+Decision: READY FOR REVIEW AND DEMO, NOT READY FOR LIVE ORDER SUBMISSION
 
 ## Scope
 
@@ -34,8 +34,8 @@ This harness audits Signal Autopsy as a safety boundary for 24/7 Bitget Reality/
 - Browser verification: desktop and mobile passed; loading state, thesis reactivity, console errors, and horizontal overflow checked.
 - Production dependencies: 0 known vulnerabilities.
 - Live order call in route API: absent and regression-tested.
-- Current live Bitget verification: BLOCKED by local DNS; historical production evidence is retained separately.
+- Production smoke verification: passed on 2026-09-16 for the deployed commit; Qwen is labeled DEMO because no provider key is configured.
 
 ## Exact Next Action
 
-Deploy this branch to a preview, run the production endpoint workflow against rAAPLUSDT, and attach the new deployment URL and response evidence. Do not restore exchange submission until a database can atomically consume each receipt once.
+Provision a durable atomic receipt-consumption store and independently review the live-order policy before adding any exchange submission path. Until then, keep the deployed SIMULATED-ONLY boundary.

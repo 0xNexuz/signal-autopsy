@@ -11,15 +11,18 @@
 - Frozen benchmark JSON with date, metrics, and dataset hash.
 - Source regression test proving the route API has no exchange order call.
 
-## Required Before Submission Claims Are Upgraded
+## Captured Production Evidence
 
-1. Deploy the audited commit to a Vercel preview.
-2. Capture successful Reality instrument, ticker, and candle response for rAAPLUSDT.
-3. Run an autopsy and capture server-owned evidence in the signed receipt.
-4. Verify the receipt before and after expiry.
-5. Capture a permitted SIMULATED gate result and a tampered denial.
-6. Run Failure Memory and capture its server-owned outcome evidence.
-7. Confirm Qwen REAL or retain DEMO/BLOCKED wording.
-8. Promote to production and record the deployment ID and commit SHA.
+- Production alias returned HTTP 200.
+- Production Reality endpoint returned REAL for rAAPLUSDT.
+- Production Qwen endpoint returned a labeled DEMO fallback.
+- Deployment ID and commit are recorded in evidence/verification-2026-09-16.md.
+
+## Still Required Before Live-Order Claims
+
+1. Provision a durable atomic single-use receipt store.
+2. Add a consume-once regression test and failure recovery policy.
+3. Review key egress, limits, monitoring, and operator approval.
+4. Test any future order adapter in a non-production environment first.
 
 Do not capture API keys, RSA private material, passphrases, or signing secrets.
